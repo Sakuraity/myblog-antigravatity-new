@@ -1,7 +1,7 @@
 ---
 title: "Atlassian 的起点"
 description: "Atlassian转型云端，AI驱动未来协作。"
-pubDate: "2025-12-18"
+pubDate: "2025-12-18T10:00:00"
 tags: ["Atlassian","深度","分析"]
 audioUrl: "https://cdn.gooo.ai/gen-audio/1da351860b347852875477b3194284ba35ea8cf540a8c9273aa8e44e7eb217b4.mp3"
 ---

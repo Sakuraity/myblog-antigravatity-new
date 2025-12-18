@@ -2,7 +2,9 @@ import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 
 export async function GET(context) {
-    const posts = await getCollection('posts');
+    const posts = (await getCollection('posts')).sort(
+        (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+    );
     return rss({
         title: "Kangyuan's Blog",
         description: 'Rational Elegance - 一個追求理性优雅的博客',

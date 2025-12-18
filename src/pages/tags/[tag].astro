@@ -7,7 +7,9 @@ export async function getStaticPaths() {
   const uniqueTags = [...new Set(allPosts.flatMap((post) => post.data.tags || []))];
 
   return uniqueTags.map((tag) => {
-    const filteredPosts = allPosts.filter((post) => post.data.tags?.includes(tag));
+    const filteredPosts = allPosts
+      .filter((post) => post.data.tags?.includes(tag))
+      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
     return {
       params: { tag },
       props: { posts: filteredPosts },

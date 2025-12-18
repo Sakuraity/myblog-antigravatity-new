@@ -1,7 +1,7 @@
 ---
 title: "Vibe Coding 后的一些思考"
 description: "从AI旁观者到创造者的转变之旅。"
-pubDate: "2025-12-18"
+pubDate: "2025-12-18T12:00:00"
 tags: ["Google","思考"]
 audioUrl: "https://cdn.gooo.ai/gen-audio/8823924e72fcca7b422fa812ddad9e4228ffafeca749b9089cd07067c321c181.mp3"
 ---
