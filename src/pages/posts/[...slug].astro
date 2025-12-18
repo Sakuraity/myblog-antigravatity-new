@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import AudioPlayer from '../../components/AudioPlayer.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('posts');
+	return posts.map((post) => ({
+		params: { slug: post.slug },
+		props: post,
+	}));
+}
+
+const post = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout title={post.data.title}>
+	<article class="max-w-3xl mx-auto py-12">
+		<header class="text-center mb-12 space-y-4">
+			<div class="flex justify-center items-center gap-2 text-sm font-medium tracking-widest uppercase text-text-muted-light dark:text-text-muted-dark">
+				<time datetime={post.data.pubDate.toISOString()}>
+					{post.data.pubDate.toLocaleDateString('zh-CN', {
+						year: 'numeric',
+						month: 'long',
+						day: 'numeric',
+					})}
+				</time>
+			</div>
+			<h1 class="text-4xl md:text-5xl font-serif font-bold text-text-light dark:text-text-dark leading-tight">
+				{post.data.title}
+			</h1>
+			<p class="text-xl md:text-2xl text-text-muted-light dark:text-text-muted-dark italic font-serif">
+				{post.data.description}
+			</p>
+			{post.data.audioUrl && (
+				<div class="pt-4">
+					<AudioPlayer url={post.data.audioUrl} title="收听本文" />
+				</div>
+			)}
+		</header>
+		
+		<div class="prose prose-lg md:prose-xl dark:prose-invert mx-auto prose-headings:font-serif prose-headings:font-bold prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg">
+			<Content />
+		</div>
+		
+	</article>
+</Layout>

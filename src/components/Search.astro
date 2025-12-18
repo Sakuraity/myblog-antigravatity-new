@@ -1,0 +1,117 @@
+<div id="search" class="ml-auto"></div>
+
+<script>
+    function initPagefind() {
+        const searchEl = document.getElementById('search');
+        // 检查是否已经初始化（防止重复初始化）
+        if (searchEl && !searchEl.querySelector('.pagefind-ui')) {
+            // @ts-ignore
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜索文章...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "站内搜索",
+                    filters_label: "筛选",
+                    zero_results: "没有找到关于 [SEARCH_TERM] 的文章",
+                    many_results: "找到 [COUNT] 篇关于 [SEARCH_TERM] 的文章",
+                    one_result: "找到 1 篇关于 [SEARCH_TERM] 的文章",
+                    alt_search: "没有找到 [SEARCH_TERM] 的结果。显示 [DIFFERENT_TERM] 的结果",
+                    search_suggestion: "没有找到 [SEARCH_TERM] 的结果。尝试一下搜 [SUGGESTION] ?",
+                    searching: "正在搜索 [SEARCH_TERM]..."
+                }
+            });
+        }
+    }
+
+    // 支持 View Transitions - 在每次页面加载时初始化
+    document.addEventListener('astro:page-load', initPagefind);
+    
+    // 初始加载时也需要初始化
+    if (document.readyState === 'complete') {
+        initPagefind();
+    } else {
+        window.addEventListener('DOMContentLoaded', initPagefind);
+    }
+</script>
+
+<style is:global>
+    /* Refined Minimalist Search */
+    #search {
+        --pagefind-ui-scale: 0.75;
+        --pagefind-ui-primary: #d00000;
+        --pagefind-ui-text: #1a1a1a;
+        --pagefind-ui-background: #ffffff;
+        --pagefind-ui-border: transparent; /* Remove border for cleaner look */
+        --pagefind-ui-tag: #f3f4f6;
+        --pagefind-ui-border-width: 0px;
+        --pagefind-ui-border-radius: 9999px; /* Full pill shape */
+        --pagefind-ui-font: "Inter", sans-serif;
+    }
+    
+    html.dark #search {
+        --pagefind-ui-text: #EDEDED;
+        --pagefind-ui-background: #1E1E21;
+        --pagefind-ui-tag: #2A2A2E;
+    }
+    
+    /* Input Styling - Glassy Pill */
+    .pagefind-ui__search-input {
+        background-color: rgba(0, 0, 0, 0.03) !important;
+        border: 1px solid transparent !important;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        padding-left: 2.5rem !important; /* Space for icon */
+        font-size: 0.85rem !important;
+        border-radius: 9999px !important;
+    }
+    
+    html.dark .pagefind-ui__search-input {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    
+    .pagefind-ui__search-input:hover {
+        background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+    html.dark .pagefind-ui__search-input:hover {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    
+    .pagefind-ui__search-input:focus {
+        background-color: #fff !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(208, 0, 0, 0.1) !important;
+        outline: none;
+    }
+    html.dark .pagefind-ui__search-input:focus {
+        background-color: #1a1a1a !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(208, 0, 0, 0.3) !important;
+    }
+
+    /* Result Panel */
+    .pagefind-ui__drawer {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(0,0,0,0.05) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1) !important;
+        margin-top: 12px !important;
+        padding: 1rem !important;
+    }
+    html.dark .pagefind-ui__drawer {
+        background-color: rgba(30, 30, 33, 0.95) !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.3) !important;
+    }
+    
+    .pagefind-ui__result-thumb {
+        display: none !important; 
+    }
+    
+    /* Search Icon alignment fix */
+    .pagefind-ui__search-clear {
+        top: 12px !important;
+    }
+</style>
+<link href="/pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="/pagefind/pagefind-ui.js" is:inline></script>

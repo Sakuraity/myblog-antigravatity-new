@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('posts');
+  const uniqueTags = [...new Set(allPosts.flatMap((post) => post.data.tags || []))];
+
+  return uniqueTags.map((tag) => {
+    const filteredPosts = allPosts.filter((post) => post.data.tags?.includes(tag));
+    return {
+      params: { tag },
+      props: { posts: filteredPosts },
+    };
+  });
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<Layout title={`标签: ${tag} | Kangyuan's Blog`}>
+  <header class="text-center mb-16">
+    <h1 class="text-3xl font-serif font-bold mb-4">#{tag}</h1>
+    <p class="text-text-muted-light dark:text-text-muted-dark">包含此标签的所有文章</p>
+  </header>
+
+  <section class="flex flex-col gap-12">
+    {posts.map((post) => (
+        <article class="flex flex-col items-start space-y-2 group">
+             <div class="flex items-center gap-3 text-xs font-medium tracking-widest uppercase text-text-muted-light dark:text-text-muted-dark">
+                <time datetime={post.data.pubDate.toISOString()}>
+                    {post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </time>
+                {post.data.category && (
+                    <>
+                        <span class="w-px h-3 bg-gray-300 dark:bg-gray-700"></span>
+                        <span>{post.data.category}</span>
+                    </>
+                )}
+            </div>
+            <h2 class="text-2xl font-serif font-bold text-text-light dark:text-text-dark group-hover:text-primary transition-colors">
+                <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+            </h2>
+             <p class="text-text-muted-light dark:text-text-muted-dark line-clamp-2">
+                {post.data.description}
+            </p>
+            {post.data.tags && post.data.tags.length > 0 && (
+                <div class="flex flex-wrap gap-2 pt-2 relative z-10">
+                    {post.data.tags.map((t) => (
+                        <a href={`/tags/${t}`} class={`text-xs font-medium text-text-muted-light dark:text-text-muted-dark bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded hover:bg-gray-200 dark:hover:bg-white/10 transition-colors duration-200 ${t === tag ? 'bg-gray-200 dark:bg-white/10' : ''}`}>
+                            #{t}
+                        </a>
+                    ))}
+                </div>
+            )}
+
+        </article>
+    ))}
+  </section>
+</Layout>
