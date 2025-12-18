@@ -1,7 +1,7 @@
 ---
 // NoteCard.astro - 闪念笔记卡片组件
 interface Props {
-    content: string;
+    content?: string;
     date: Date;
     tags?: string[];
 }
@@ -46,7 +46,7 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
         
         <!-- Content -->
         <div class="prose prose-sm dark:prose-invert max-w-none text-text-light dark:text-text-dark">
-            <Fragment set:html={content} />
+            {content ? <Fragment set:html={content} /> : <slot />}
         </div>
     </div>
 </article>

@@ -1,0 +1,191 @@
+---
+---
+
+<div class="stranger-card relative w-full h-full min-h-[450px] flex items-center justify-center p-8 overflow-hidden rounded-sm group select-none bg-black">
+  <!-- Vignette & Noise -->
+  <div class="absolute inset-0 bg-black z-0"></div>
+  <div class="vignette absolute inset-0 z-10 pointer-events-none"></div>
+  <div class="scanlines absolute inset-0 z-10 pointer-events-none opacity-20"></div>
+  
+  <!-- Alphabet Wall Background -->
+  <div class="alphabet-wall absolute inset-0 z-0 flex flex-wrap content-center justify-center gap-4 p-4 opacity-20 group-hover:opacity-40 transition-opacity duration-1000">
+    {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((char, i) => (
+      <span class="alphabet-letter font-serif font-bold text-xl sm:text-2xl text-white/20 select-none" style={`--delay: ${i * 0.1}s; --color: ${['#ff0000', '#00ff00', '#0000ff', '#ffff00'][i % 4]}`}>{char}</span>
+    ))}
+  </div>
+
+  <!-- Particles (Upside Down spores) -->
+  <div class="particles absolute inset-0 z-10 pointer-events-none"></div>
+
+  <!-- Floating Icons -->
+  <div class="absolute inset-0 z-10 overflow-hidden pointer-events-none">
+    <div class="floating-icon text-4xl absolute top-10 left-10 opacity-60" style="animation-delay: 0s">🚲</div>
+    <div class="floating-icon text-4xl absolute bottom-20 right-10 opacity-60" style="animation-delay: 2s">🧇</div>
+    <div class="floating-icon text-4xl absolute top-20 right-20 opacity-60" style="animation-delay: 4s">🎲</div>
+    <div class="floating-icon text-4xl absolute bottom-10 left-20 opacity-60" style="animation-delay: 6s">🧢</div>
+  </div>
+
+
+
+  <div class="relative z-20 flex flex-col items-center justify-center transform scale-90 sm:scale-100 transition-transform duration-500 hover:scale-105">
+    <!-- Intro Lines -->
+    <div class="w-full border-t-2 border-red-600 shadow-[0_0_15px_rgba(220,38,38,0.8)] opacity-80 mb-2"></div>
+    
+    <div class="flex flex-col items-center gap-1 mb-8">
+      <h2 class="stranger-font text-5xl sm:text-6xl text-transparent tracking-widest leading-none text-center">
+        STRANGER <br/> THINGS
+      </h2>
+      <div class="flex items-center gap-4 mt-2">
+        <span class="text-3xl text-red-600 font-bold border-2 border-red-600 px-2 rounded box-shadow-neon">5</span>
+        <span class="text-xl sm:text-2xl text-red-500 font-serif tracking-widest uppercase">Part 2</span>
+      </div>
+    </div>
+    
+    <div class="w-full border-t-2 border-red-600 shadow-[0_0_15px_rgba(220,38,38,0.8)] opacity-80 mb-8"></div>
+
+    <!-- Countdown Timer -->
+    <div class="grid grid-cols-4 gap-4 sm:gap-6 text-center w-full max-w-sm backdrop-blur-sm bg-black/30 p-4 rounded-xl border border-red-900/30">
+      <div class="flex flex-col items-center">
+        <span id="days" class="retro-digit text-2xl sm:text-3xl text-red-500 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">00</span>
+        <span class="text-[10px] sm:text-xs text-red-700 uppercase tracking-widest mt-1 font-bold">Days</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <span id="hours" class="retro-digit text-2xl sm:text-3xl text-red-500 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">00</span>
+        <span class="text-[10px] sm:text-xs text-red-700 uppercase tracking-widest mt-1 font-bold">Hours</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <span id="minutes" class="retro-digit text-2xl sm:text-3xl text-red-500 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">00</span>
+        <span class="text-[10px] sm:text-xs text-red-700 uppercase tracking-widest mt-1 font-bold">Mins</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <span id="seconds" class="retro-digit text-2xl sm:text-3xl text-red-500 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">00</span>
+        <span class="text-[10px] sm:text-xs text-red-700 uppercase tracking-widest mt-1 font-bold">Secs</span>
+      </div>
+    </div>
+    
+    <p class="mt-6 text-red-800/80 text-xs tracking-[0.2em] font-serif uppercase animate-pulse">
+       The Beginning of the End
+    </p>
+  </div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Benguiat+ITC:wght@700&display=swap'); 
+  
+  .stranger-font {
+    font-family: "Benguiat", "ITC Benguiat", "Merriweather", serif;
+    font-weight: 800;
+    -webkit-text-stroke: 1.5px #c90000;
+    text-shadow: 
+      0 0 2px #ff0000,
+      0 0 10px #8b0000;
+     animation: neon-pulse 3s infinite alternate;
+  }
+  
+  .box-shadow-neon {
+    box-shadow: 0 0 5px #ff0000, inset 0 0 5px #ff0000;
+  }
+
+  /* Vignette effect */
+  .vignette {
+    background: radial-gradient(circle at center, transparent 40%, black 100%);
+  }
+
+  /* Scanlines */
+  .scanlines {
+    background: linear-gradient(
+      to bottom,
+      rgba(255,255,255,0),
+      rgba(255,255,255,0) 50%,
+      rgba(0,0,0,0.2) 50%,
+      rgba(0,0,0,0.2)
+    );
+    background-size: 100% 4px;
+  }
+
+  /* Particles */
+  .particles {
+    background-image: 
+      radial-gradient(circle at 50% 50%, rgba(200, 200, 200, 0.4) 1px, transparent 1.5px),
+      radial-gradient(circle at 30% 70%, rgba(200, 200, 200, 0.3) 1px, transparent 1.5px);
+    background-size: 100px 100px;
+    animation: floating 8s infinite linear;
+    filter: blur(1px);
+  }
+
+
+
+  /* Floating Icons */
+  .floating-icon {
+    animation: float-around 10s infinite ease-in-out alternate;
+  }
+  
+  @keyframes float-around {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(20px, 20px) rotate(10deg); }
+  }
+
+  /* Blinking Alphabet */
+  .alphabet-letter {
+    animation: text-blink 3s infinite;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes text-blink {
+    0%, 100% { text-shadow: none; color: rgba(255, 255, 255, 0.2); }
+    50% { text-shadow: 0 0 10px var(--color); color: var(--color); }
+  }
+
+  @keyframes floating {
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 100px; }
+  }
+
+  @keyframes neon-pulse {
+    0%, 100% { text-shadow: 0 0 2px #ff0000, 0 0 10px #8b0000; }
+    50% { text-shadow: 0 0 4px #ff3333, 0 0 20px #a00000; }
+  }
+</style>
+
+<script>
+  function updateCountdown() {
+    // Target: Stranger Things Season 5 Part 2 (Dec 25, 2025)
+    // Using simple date string parsing which defaults to local time or UTC depending on browser. 
+    // Ideally we'd use '2025-12-25T17:00:00-08:00' for PT, but for a fun blog widget local midnight or 5PM is close enough.
+    // Let's target 5PM PT (UTC-8) -> Dec 26 01:00 UTC approximately
+    // Or just "Christmas Day" broadly. Let's aim for Midnight UTC to be safe or just local.
+    // Given the specific request: "Dec 25, 2025".
+    
+    const targetDate = new Date('December 25, 2025 17:00:00 PST').getTime(); 
+    // If PST parsing fails in some environments, fallback to a generally safe string
+    // const targetDate = new Date('2025-12-25T17:00:00-08:00').getTime();
+
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    if (distance < 0) {
+       // Released!
+       const el = document.getElementById('days');
+       if(el) el.parentElement.parentElement.innerHTML = '<div class="text-4xl text-red-600 font-bold animate-pulse">RELEASED</div>';
+       return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    const updateElement = (id: string, value: number) => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = value.toString().padStart(2, '0');
+    };
+
+    updateElement('days', days);
+    updateElement('hours', hours);
+    updateElement('minutes', minutes);
+    updateElement('seconds', seconds);
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+</script>
