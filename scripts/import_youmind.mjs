@@ -406,6 +406,24 @@ async function processFile(filePath, sourceDir = null) {
         await fs.writeFile(path.join(postDir, 'index.md'), content);
         console.log(`      ✅  Saved to: content/posts/${slug}/index.md`);
 
+        // Final Rename: Ensure folder name matches the final title
+        // Extract title from the final content (frontmatter)
+        const titleMatch = content.match(/^title:\s*"(.*?)"/m);
+        if (titleMatch) {
+            const finalTitle = titleMatch[1];
+            const newSlug = toSlug(finalTitle);
+
+            if (newSlug && newSlug !== slug) {
+                const newPostDir = path.join(TARGET_POSTS_DIR, newSlug);
+                try {
+                    await fs.rename(postDir, newPostDir);
+                    console.log(`      ✨ Renamed folder to: content/posts/${newSlug}/`);
+                } catch (e) {
+                    console.warn(`      ⚠️  Could not rename folder to '${newSlug}': ${e.message}`);
+                }
+            }
+        }
+
     } catch (e) {
         console.error(`      ❌ Failed to process ${filePath}:`, e.message);
     }

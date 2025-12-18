@@ -4,7 +4,7 @@
 export PATH=$PATH:/usr/local/bin
 
 # 切换到项目目录
-SOURCE_DIR="/Users/sakuraity/Documents/Vibe Creating/myblog-antigravatity"
+SOURCE_DIR="/Users/sakuraity/Projects/myblog-antigravatity-main"
 
 # Load Environment Variables from .env if it exists (more robust method)
 if [ -f "$SOURCE_DIR/.env" ]; then
