@@ -166,7 +166,9 @@
     if (distance < 0) {
        // Released!
        const el = document.getElementById('days');
-       if(el) el.parentElement.parentElement.innerHTML = '<div class="text-4xl text-red-600 font-bold animate-pulse">RELEASED</div>';
+       if(el?.parentElement?.parentElement) {
+         el.parentElement.parentElement.innerHTML = '<div class="text-4xl text-red-600 font-bold animate-pulse">RELEASED</div>';
+       }
        return;
     }
 
