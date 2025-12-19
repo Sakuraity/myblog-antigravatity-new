@@ -21,7 +21,7 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
 });
 ---
 
-<article class="relative pl-6 pb-8 border-l-2 border-gray-200 dark:border-gray-700 last:pb-0">
+<article class="note-card relative pl-6 pb-8 border-l-2 border-gray-200 dark:border-gray-700 last:pb-0">
     <!-- Timeline dot -->
     <div class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-primary"></div>
     
@@ -50,3 +50,27 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
         </div>
     </div>
 </article>
+
+<style is:global>
+    /* Restrict image size in note cards only */
+    .note-card .prose img {
+        max-height: 200px;
+        width: auto;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        cursor: zoom-in;
+        transition: transform 0.2s ease;
+        background-color: rgb(0 0 0 / 0.05);
+        display: block; /* Ensure no inline weirdness */
+        margin-top: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .html-dark .note-card .prose img {
+        background-color: rgb(255 255 255 / 0.05);
+    }
+
+    .note-card .prose img:hover {
+        transform: scale(1.02);
+    }
+</style>

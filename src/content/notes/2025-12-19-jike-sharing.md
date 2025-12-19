@@ -1,5 +1,5 @@
 ---
-date: 2025-12-19T09:32:00
+date: 2025-12-19T09:32:00+08:00
 tags: ["Jike", "随想"]
 ---
 It’s always better to be a little boring than completely baffling. 🥸🥸
