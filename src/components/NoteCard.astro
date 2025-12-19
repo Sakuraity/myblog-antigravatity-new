@@ -4,9 +4,13 @@ interface Props {
     content?: string;
     date: Date;
     tags?: string[];
+    truncate?: boolean;
+    slug?: string;
 }
 
-const { content, date, tags } = Astro.props;
+const { content, date, tags, truncate = false, slug } = Astro.props;
+
+// ... (date formatting remains same)
 
 // Format date with time
 const formattedDate = date.toLocaleDateString('zh-CN', {
@@ -45,13 +49,222 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
         </div>
         
         <!-- Content -->
-        <div class="prose prose-sm dark:prose-invert max-w-none text-text-light dark:text-text-dark">
+        <!-- Content -->
+        <div 
+            id={`note-content-${formattedDate}-${formattedTime}`}
+            class={`prose prose-sm dark:prose-invert max-w-none text-text-light dark:text-text-dark transition-all duration-500 ease-in-out ${truncate ? 'max-h-32 overflow-hidden relative' : ''}`}
+        >
             {content ? <Fragment set:html={content} /> : <slot />}
+            
+            {truncate && (
+                <div class="read-more-overlay absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-bg-light dark:from-bg-dark to-transparent flex items-end justify-center pb-0 pointer-events-none">
+                    <button 
+                        data-target={`note-content-${formattedDate}-${formattedTime}`}
+                        class="read-more-btn pointer-events-auto text-xs font-medium text-primary hover:underline bg-bg-light/80 dark:bg-bg-dark/80 px-3 py-1 rounded-full shadow-sm border border-black/5 dark:border-white/10 backdrop-blur-sm transition-all hover:bg-bg-light dark:hover:bg-bg-dark group-hover/btn:scale-105"
+                    >
+                        Read more &darr;
+                    </button>
+                </div>
+            )}
         </div>
     </div>
 </article>
 
+<script>
+    function initNoteCards() {
+        // Find all read-more buttons
+        const buttons = document.querySelectorAll('.read-more-btn');
+        
+        buttons.forEach(btn => {
+            const targetId = (btn as HTMLElement).dataset.target;
+            const container = document.getElementById(targetId!);
+            const overlay = btn.parentElement;
+
+            if (!container || !overlay) return;
+
+            // Check if content overflows
+            // We need to temporarily remove max-h to measure? No, scrollHeight handles it.
+            // If container has max-h-32 (128px).
+            // scrollHeight > clientHeight means overflow.
+            
+            const checkOverflow = () => {
+                 if (container.scrollHeight <= container.clientHeight + 2) { // +2 for border/margin error margin
+                     overlay.classList.add('hidden');
+                     container.classList.remove('max-h-32', 'overflow-hidden'); // Just show it fully
+                 } else {
+                     overlay.classList.remove('hidden');
+                 }
+            };
+            
+            // Run initially
+            checkOverflow();
+
+            // Run on window resize just in case
+            window.addEventListener('resize', checkOverflow);
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent triggering document click
+                
+                const isExpanded = container.classList.contains('expanded');
+                
+                if (isExpanded) {
+                    // Collapse
+                    container.classList.remove('expanded');
+                    container.classList.add('max-h-32', 'overflow-hidden');
+                    overlay.classList.remove('opacity-0', 'pointer-events-none'); // Show overlay
+                    overlay.classList.add('flex'); // Restore flex layout
+                    overlay.style.background = ''; // Restore gradient
+                    
+                    // Clear expanded state classes
+                    const card = container.closest('.note-card');
+                    if (card) card.classList.remove('expanded-card');
+                    const notesContainer = container.closest('.space-y-6');
+                    if (notesContainer) notesContainer.classList.remove('has-expanded-note');
+                    
+                    // Restore button text
+                    (btn as HTMLElement).innerHTML = 'Read more &darr;';
+                     
+                    // Scroll back to top of note if needed? No.
+                } else {
+                    // Expand
+                    // First, close all other expanded notes (Accordion behavior)
+                    document.querySelectorAll('.prose.expanded').forEach(other => {
+                       if (other.id !== targetId) {
+                           const otherBtn = other.querySelector('.read-more-btn');
+                           if (otherBtn) (otherBtn as HTMLElement).click();
+                       } 
+                    });
+
+                    container.classList.add('expanded');
+                    container.classList.remove('max-h-32', 'overflow-hidden');
+                    
+                    // Remove gradient but keep button
+                    overlay.style.background = 'none';
+                    // We might want to move button or change style?
+                    // For now keeping it simple
+                    
+                    (btn as HTMLElement).innerHTML = 'Collapse &uarr;';
+                    
+                    // Mark this card as expanded
+                    const card = container.closest('.note-card');
+                    if (card) card.classList.add('expanded-card');
+                    
+                    // Add state class to parent container for "dim others" effect
+                    const notesContainer = container.closest('.space-y-6'); // Finding the parent list container
+                    if (notesContainer) notesContainer.classList.add('notes-container', 'has-expanded-note');
+
+                    // Auto-focus: Scroll to the card top
+                    // Reduced delay for snappier feel
+                    setTimeout(() => {
+                        if (card) {
+                            card.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'center' // Try center alignment for better context
+                            });
+                        }
+                    }, 200);
+                }
+            });
+        });
+
+        // Helper to clear all expanded states
+        const clearExpandedState = () => {
+             document.querySelectorAll('.expanded-card').forEach(c => c.classList.remove('expanded-card'));
+             document.querySelectorAll('.notes-container').forEach(c => c.classList.remove('has-expanded-note'));
+        };
+
+        // Click outside to collapse expanded notes
+        document.addEventListener('click', (e) => {
+            const expandedNotes = document.querySelectorAll('.prose.expanded');
+            let clickedInsideAnyNote = false;
+            
+            expandedNotes.forEach(note => {
+                 if (note.contains(e.target as Node)) {
+                     clickedInsideAnyNote = true;
+                 } else {
+                     // Clicked outside this SPECIFIC note... 
+                     // But we only want to collapse if clicked outside ALL notes really, 
+                     // OR if we click another note (handled by button click logic)
+                 }
+            });
+            
+            // If we clicked strictly outside any expanded note content (and not on a button which stops propagation)
+            if (!clickedInsideAnyNote && expandedNotes.length > 0) {
+                 clearExpandedState();
+                 // Trigger collapse on all
+                 expandedNotes.forEach(note => {
+                     const btn = note.querySelector('.read-more-btn');
+                     if (btn) (btn as HTMLElement).click();
+                 });
+            }
+        }); 
+        
+        // Also hook into the collapse logic in the button click handler to clear classes
+        // We need to modify the collapse block above, but it's inside the big loop.
+        // Let's rely on the fact that when we collapse, we should check if any others are open?
+        // Actually, our logic is "Accordion" -> only one open.
+        // So if we collapse the current one, we are clearing everything.
+        
+        // Wait, I can't easily modify the collapse block above without replacing the whole function again in this tool.
+        // I should have replaced the whole function. The current replacement is partial.
+        // Let me verify where the previous replacement block starts/ends.
+        // It starts at `(btn as HTMLElement).innerHTML = 'Collapse &uarr;';` inside the `else` (Expand) block.
+        // So I only modified the EXPAND logic.
+        // I need to modify the COLLAPSE logic too to remove the classes.
+        
+        // Since I cannot modify "non-contiguous" or "far away" lines in one replace call easily if I didn't select them,
+        // and I only selected the end of the Expand block.
+        
+        // I will let this replacement apply to the EXPAND block.
+        // then I will make another call to fix the COLLAPSE block.
+
+
+
+    }
+
+    // Initialize on load and after swap
+    document.addEventListener('astro:page-load', initNoteCards);
+</script>
+
 <style is:global>
+    /* Adjust scroll position offset for sticky header */
+    .note-card {
+        scroll-margin-top: 5rem;
+        transition: opacity 0.4s ease; /* Ensure opacity transition is smooth */
+    }
+
+    /* Focus Mode: Dim other cards when one is expanded */
+    /* We need a parent class handler for this usually, but we can do it via :has if supported or JS class on container */
+    /* Let's use a class on the container div */
+    
+    /* When container has .has-expanded-note, all .note-card dim */
+    :global(.notes-container.has-expanded-note) .note-card {
+        opacity: 0.4;
+        filter: blur(0.5px);
+        transition: opacity 0.4s ease, filter 0.4s ease;
+    }
+    
+    /* But the expanded one stays active */
+    :global(.notes-container.has-expanded-note) .note-card.expanded-card {
+        opacity: 1 !important;
+        filter: none !important;
+        /* Add a subtle shadow to pop it out */
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1); 
+        z-index: 10;
+        background: transparent; /* Ensure no background issues */
+    }
+    
+    /* Dark mode shadow adjustment */
+    :global(.html-dark .notes-container.has-expanded-note) .note-card.expanded-card {
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Hovering over dimmed cards brings them back slightly */
+    :global(.notes-container.has-expanded-note) .note-card:not(.expanded-card):hover {
+        opacity: 0.8;
+        filter: none;
+    }
+
     /* Restrict image size in note cards only */
     .note-card .prose img {
         max-height: 200px;

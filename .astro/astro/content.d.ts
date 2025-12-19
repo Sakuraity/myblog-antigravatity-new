@@ -185,6 +185,20 @@ declare module 'astro:content' {
   collection: "notes";
   data: InferEntrySchema<"notes">
 } & { render(): Render[".md"] };
+"2025-12-19-rolling-stone-40.md": {
+	id: "2025-12-19-rolling-stone-40.md";
+  slug: "2025-12-19-rolling-stone-40";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
+"2025-12-19-value-creator-vs-capturer.md": {
+	id: "2025-12-19-value-creator-vs-capturer.md";
+  slug: "2025-12-19-value-creator-vs-capturer";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
 };
 "posts": {
 "atlassian-的起点/index.md": {
