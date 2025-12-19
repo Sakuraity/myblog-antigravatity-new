@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import AudioPlayer from '../../components/AudioPlayer.astro';
 
@@ -13,12 +14,26 @@ export async function getStaticPaths() {
 
 const post = Astro.props;
 const { Content } = await post.render();
+
+// Simply get 3 recent posts as related articles for now
+const allPosts = await getCollection('posts');
+const relatedPosts = allPosts
+	.filter((p) => p.slug !== post.slug)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
 ---
 
 <Layout title={post.data.title}>
-	<article class="max-w-3xl mx-auto py-12">
-		<header class="text-center mb-12 space-y-4">
-			<div class="flex justify-center items-center gap-2 text-sm font-medium tracking-widest uppercase text-text-muted-light dark:text-text-muted-dark">
+	<article class="py-12 md:py-20">
+		<!-- Header -->
+		<div class="max-w-4xl mx-auto px-6 mb-12">
+			<div class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark mb-6">
+				<span>{post.data.category || 'Essay'}</span>
+			</div>
+			<h1 class="text-3xl md:text-5xl font-serif font-bold text-text-light dark:text-text-dark leading-tight mb-6">
+				{post.data.title}
+			</h1>
+			<div class="flex items-center gap-4 text-sm text-text-muted-light dark:text-text-muted-dark font-light">
 				<time datetime={post.data.pubDate.toISOString()}>
 					{post.data.pubDate.toLocaleDateString('zh-CN', {
 						year: 'numeric',
@@ -26,23 +41,70 @@ const { Content } = await post.render();
 						day: 'numeric',
 					})}
 				</time>
+				<span>&middot;</span>
+				<span>{Math.ceil(post.body.length / 500)} min read</span>
 			</div>
-			<h1 class="text-4xl md:text-5xl font-serif font-bold text-text-light dark:text-text-dark leading-tight">
-				{post.data.title}
-			</h1>
-			<p class="text-xl md:text-2xl text-text-muted-light dark:text-text-muted-dark italic font-serif">
-				{post.data.description}
-			</p>
-			{post.data.audioUrl && (
-				<div class="pt-4">
-					<AudioPlayer url={post.data.audioUrl} title="收听本文" />
-				</div>
-			)}
-		</header>
-		
-		<div class="prose prose-lg md:prose-xl dark:prose-invert mx-auto prose-headings:font-serif prose-headings:font-bold prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg">
-			<Content />
 		</div>
-		
+
+		<!-- Hero Image -->
+		{post.data.heroImage && (
+			<div class="w-full h-[300px] md:h-[600px] bg-gray-100 dark:bg-gray-800 mb-16 overflow-hidden">
+				<Image 
+					src={post.data.heroImage} 
+					alt={post.data.title} 
+					class="w-full h-full object-cover" 
+					width={1920}
+					height={1080}
+				/>
+			</div>
+		)}
+
+		<!-- Audio Player -->
+		{post.data.audioUrl && (
+			<div class="max-w-2xl mx-auto px-6 mb-12">
+				<AudioPlayer url={post.data.audioUrl} title="收听本文" />
+			</div>
+		)}
+
+		<!-- Content -->
+		<div class="max-w-2xl mx-auto px-6">
+			<div class="prose prose-lg md:prose-xl dark:prose-invert prose-p:font-serif prose-p:font-light prose-headings:font-normal prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg prose-p:leading-relaxed">
+				{post.data.description && (
+					<>
+						<p class="text-xl md:text-2xl leading-relaxed font-serif text-text-light/90 dark:text-text-dark/90 italic mb-12">
+							{post.data.description}
+						</p>
+						<hr class="w-24 border-t border-black/10 dark:border-white/10 my-12" />
+					</>
+				)}
+				<Content />
+			</div>
+		</div>
 	</article>
+
+	<!-- Related Articles -->
+	<div class="border-t border-black/5 dark:border-white/10 mt-12 py-16 bg-bg-light/50 dark:bg-bg-dark/50">
+		<div class="max-w-2xl mx-auto px-6">
+			<h3 class="font-serif text-xl mb-8 text-text-light dark:text-text-dark">相关文章</h3>
+			<div class="space-y-8">
+				{relatedPosts.map((p) => (
+					<a href={`/posts/${p.slug}`} class="block group">
+						<div class="flex items-start justify-between gap-4">
+							<div>
+								<h4 class="font-serif text-lg font-medium group-hover:text-primary transition-colors text-text-light dark:text-text-dark">
+									{p.data.title}
+								</h4>
+								<p class="text-sm text-text-muted-light dark:text-text-muted-dark mt-2 line-clamp-2 font-light">
+									{p.data.description}
+								</p>
+								<time class="text-xs text-text-muted-light/60 dark:text-text-muted-dark/60 mt-3 block uppercase tracking-wider">
+									{p.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+								</time>
+							</div>
+						</div>
+					</a>
+				))}
+			</div>
+		</div>
+	</div>
 </Layout>

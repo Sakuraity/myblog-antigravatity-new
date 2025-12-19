@@ -19,7 +19,8 @@ export default {
 				'text-muted-dark': '#A1A1AA',
 			},
 			fontFamily: {
-				serif: ['"Playfair Display"', '"Noto Serif SC"', 'serif'],
+				serif: ['"EB Garamond"', '"Playfair Display"', '"Noto Serif SC"', 'Georgia', 'serif'],
+				display: ['"Playfair Display"', '"Noto Serif SC"', 'Georgia', 'serif'],
 				sans: ['"Inter"', 'system-ui', 'sans-serif'],
 			},
 		},

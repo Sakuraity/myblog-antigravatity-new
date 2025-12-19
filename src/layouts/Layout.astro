@@ -7,6 +7,9 @@ import '@fontsource/playfair-display/400.css';
 import '@fontsource/playfair-display/700.css';
 import '@fontsource/noto-serif-sc/400.css';
 import '@fontsource/noto-serif-sc/700.css';
+import '@fontsource/eb-garamond/400.css';
+import '@fontsource/eb-garamond/500.css';
+import '@fontsource/eb-garamond/700.css';
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/600.css';
 
@@ -56,37 +59,37 @@ const { title } = Astro.props;
 			<div class="max-w-6xl mx-auto px-6 h-16 grid grid-cols-12 items-center">
 				<!-- Left: Logo -->
 				<div class="col-span-3 flex justify-start">
-					<a href="/" class="font-serif text-xl font-bold tracking-tight hover:text-primary transition-colors">
+					<a href="/" class="font-serif text-2xl font-bold tracking-tight text-text-light dark:text-text-dark hover:opacity-80 transition-opacity">
 						Kangyuan's Blog
 					</a>
 				</div>
 				
 				<!-- Center: Nav -->
 				<div class="col-span-6 flex justify-center">
-					<nav class="flex items-center gap-8 text-sm font-medium text-text-muted-light dark:text-text-muted-dark">
-					<a href="/" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group">
+					<nav class="hidden md:flex items-center gap-8 text-xs font-medium uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark">
+					<a href="/" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group py-2">
 						Home
-						<span class="absolute -bottom-1 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
+						<span class="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
 					</a>
-					<a href="/works" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group">
+					<a href="/works" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group py-2">
 						Works
-						<span class="absolute -bottom-1 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
+						<span class="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
 					</a>
-					<a href="/library" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group">
+					<a href="/library" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group py-2">
 						Library
-						<span class="absolute -bottom-1 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
+						<span class="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
 					</a>
-					<a href="/blog" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group">
+					<a href="/blog" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group py-2">
 						Blog
-						<span class="absolute -bottom-1 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
+						<span class="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
 					</a>
-					<a href="/notes" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group">
+					<a href="/notes" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group py-2">
 						Notes
-						<span class="absolute -bottom-1 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
+						<span class="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
 					</a>
-					<a href="/about" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group">
+					<a href="/about" class="hover:text-text-light dark:hover:text-text-dark transition-colors relative group py-2">
 						About
-						<span class="absolute -bottom-1 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
+						<span class="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all group-hover:w-full"></span>
 					</a>
 				</nav>
 				</div>
@@ -96,11 +99,11 @@ const { title } = Astro.props;
 					<div class="relative group">
 						<Search />
 					</div>
-					<div class="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+					<div class="hidden md:block w-px h-3 bg-gray-200 dark:bg-gray-700"></div>
 					<!-- Theme Toggle Button -->
 					<button id="theme-toggle" aria-label="Toggle Dark Mode" class="p-2 -mr-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-text-muted-light dark:text-text-muted-dark hover:text-text-light dark:hover:text-text-dark">
-						<svg class="sun block dark:hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-						<svg class="moon hidden dark:block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 24.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+						<svg class="sun block dark:hidden w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+						<svg class="moon hidden dark:block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 24.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
 					</button>
 				</div>
 			</div>
@@ -110,8 +113,43 @@ const { title } = Astro.props;
 			<slot />
 		</main>
 
-		<footer class="border-t border-black/5 dark:border-white/10 py-8 text-center text-sm text-text-muted-light dark:text-text-muted-dark">
-			<p>&copy; {new Date().getFullYear()} Kangyuan's Blog. 版权所有.</p>
+		<footer class="border-t border-black/5 dark:border-white/10 py-12">
+			<div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+				<!-- Column 1: Brand -->
+				<div class="col-span-1">
+					<p class="font-serif text-lg font-bold text-text-light dark:text-text-dark mb-4">Kangyuan's Blog</p>
+					<p class="text-xs text-text-muted-light dark:text-text-muted-dark leading-relaxed">
+						安放思考，自由表达，分享创造
+					</p>
+				</div>
+				
+				<!-- Column 2: Links -->
+				<div class="col-span-1">
+					<h4 class="text-xs font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark mb-4">Pages</h4>
+					<ul class="space-y-2 text-sm">
+						<li><a href="/about" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">About</a></li>
+						<li><a href="/works" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">Works</a></li>
+						<li><a href="/blog" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">Blog</a></li>
+					</ul>
+				</div>
+
+				<!-- Column 3: Connect -->
+				<div class="col-span-1">
+					<h4 class="text-xs font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark mb-4">Connect</h4>
+					<ul class="space-y-2 text-sm">
+						<li><a href="https://twitter.com" target="_blank" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">Twitter (X)</a></li>
+						<li><a href="https://github.com" target="_blank" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">GitHub</a></li>
+						<li><a href="/rss.xml" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">RSS</a></li>
+					</ul>
+				</div>
+				
+				<!-- Column 4: Copyright -->
+				<div class="col-span-1 flex flex-col justify-end">
+					<p class="text-xs text-text-muted-light dark:text-text-muted-dark">
+						&copy; {new Date().getFullYear()} Kangyuan's Blog. All rights reserved.
+					</p>
+				</div>
+			</div>
 		</footer>
 
 		<script>
