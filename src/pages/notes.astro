@@ -27,12 +27,13 @@ const notesWithContent = await Promise.all(
         
         <!-- Timeline -->
         <div class="relative">
-            {notesWithContent.map(({ note }) => (
+            {notesWithContent.map(({ note, Content }) => (
                 <NoteCard 
-                    content={note.body}
                     date={note.data.date}
                     tags={note.data.tags}
-                />
+                >
+                    <Content />
+                </NoteCard>
             ))}
         </div>
         
