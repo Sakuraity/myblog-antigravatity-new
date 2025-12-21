@@ -215,6 +215,13 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".md"] };
+"一-分发优于产品-重新理解增长的本质/index.md": {
+	id: "一-分发优于产品-重新理解增长的本质/index.md";
+  slug: "一-分发优于产品-重新理解增长的本质";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".md"] };
 "为什么是诺基亚/index.md": {
 	id: "为什么是诺基亚/index.md";
   slug: "为什么是诺基亚";
