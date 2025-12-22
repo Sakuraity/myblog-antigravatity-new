@@ -8,7 +8,7 @@ const posts = (await getCollection('posts')).sort(
 
 const notesRaw = (await getCollection('notes')).sort(
     (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-).slice(0, 5);
+).slice(0, 4);
 
 
 
