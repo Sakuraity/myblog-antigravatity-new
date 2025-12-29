@@ -199,8 +199,50 @@ declare module 'astro:content' {
   collection: "notes";
   data: InferEntrySchema<"notes">
 } & { render(): Render[".md"] };
+"2025-12-22-wechat-reading-ai.md": {
+	id: "2025-12-22-wechat-reading-ai.md";
+  slug: "2025-12-22-wechat-reading-ai";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
+"2025-12-23-gemini-ai-studio-coding.md": {
+	id: "2025-12-23-gemini-ai-studio-coding.md";
+  slug: "2025-12-23-gemini-ai-studio-coding";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
+"2025-12-25-claude-christmas.md": {
+	id: "2025-12-25-claude-christmas.md";
+  slug: "2025-12-25-claude-christmas";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
+"2025-12-29-2026-reflection.md": {
+	id: "2025-12-29-2026-reflection.md";
+  slug: "2025-12-29-2026-reflection";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
 };
 "posts": {
+"2025-year-end-review/index.md": {
+	id: "2025-year-end-review/index.md";
+  slug: "2025-year-end-review";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".md"] };
+"Lovable增长负责人Elena Vega：为什么传统获客渠道正在失效，产品如何重新定义分发策略/index.md": {
+	id: "Lovable增长负责人Elena Vega：为什么传统获客渠道正在失效，产品如何重新定义分发策略/index.md";
+  slug: "lovable增长负责人elena-vega为什么传统获客渠道正在失效产品如何重新定义分发策略";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".md"] };
 "atlassian-的起点/index.md": {
 	id: "atlassian-的起点/index.md";
   slug: "atlassian-的起点";
@@ -211,13 +253,6 @@ declare module 'astro:content' {
 "vibe-coding-后的一些思考/index.md": {
 	id: "vibe-coding-后的一些思考/index.md";
   slug: "vibe-coding-后的一些思考";
-  body: string;
-  collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".md"] };
-"一-分发优于产品-重新理解增长的本质/index.md": {
-	id: "一-分发优于产品-重新理解增长的本质/index.md";
-  slug: "一-分发优于产品-重新理解增长的本质";
   body: string;
   collection: "posts";
   data: InferEntrySchema<"posts">
