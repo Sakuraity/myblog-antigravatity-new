@@ -62,7 +62,8 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
             const filledIcon = button.querySelector('.like-icon-filled') as HTMLElement;
             const countDisplay = button.parentElement?.querySelector('.like-count') as HTMLElement;
             
-            // 检查是否已点赞
+            // 内部状态跟踪
+            let currentCount = 0;
             let isLiked = localStorage.getItem(storageKey) === 'true';
             updateUI(isLiked);
             fetchCount();
@@ -77,7 +78,8 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
                     const res = await fetch(fetchUrl);
                     const data = await res.json();
                     if (data && typeof data.count === 'number') {
-                        updateCountUI(data.count);
+                        currentCount = data.count;
+                        updateCountUI(currentCount);
                     }
                 } catch (err) {
                     console.debug('Fetch count failed:', err);
@@ -120,18 +122,21 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
                 const cfUrl = (button as HTMLElement).dataset.cfUrl;
                 
                 if (wasLiked) {
+                    // 取消点赞
                     localStorage.removeItem(storageKey);
                     updateUI(false);
-                    // 注意：取消点赞逻辑在简易版中通常不处理后端减一，这里仅保持前端状态
+                    // 前端计数减一（但不低于 0）
+                    currentCount = Math.max(0, currentCount - 1);
+                    updateCountUI(currentCount);
                 } else {
+                    // 点赞
                     localStorage.setItem(storageKey, 'true');
                     updateUI(true);
                     animateLike();
                     
-                    // 乐观更新 UI 上的计数
-                    const currentText = countDisplay.textContent || '0';
-                    const currentNum = parseInt(currentText) || 0;
-                    updateCountUI(currentNum + 1);
+                    // 乐观更新计数
+                    currentCount += 1;
+                    updateCountUI(currentCount);
                     
                     // 静默调用 API
                     try {
@@ -151,7 +156,8 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
                         const data = await res.json();
                         // 如果后端返回了精确的最新计数，同步一下
                         if (data && typeof data.count === 'number') {
-                            updateCountUI(data.count);
+                            currentCount = data.count;
+                            updateCountUI(currentCount);
                         }
                     } catch (err) {
                         console.debug('Like API call failed:', err);

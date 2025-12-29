@@ -5,7 +5,7 @@
 ### 配置步骤
 
 1. **创建 KV 命名空间**：
-   - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)。
+   - 登录 [Cloudflare Dashboard](![alt text](image.png))。
    - 点击 **Workers & Pages** -> **KV** -> **Create a namespace**。
    - 名字建议叫 `blog-likes-kv`。
 
