@@ -120,30 +120,49 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
                 
                 const wasLiked = localStorage.getItem(storageKey) === 'true';
                 const cfUrl = (button as HTMLElement).dataset.cfUrl;
+                const apiUrl = cfUrl 
+                    ? `${cfUrl.replace(/\/$/, '')}/like/${id}`
+                    : '/api/like';
                 
                 if (wasLiked) {
                     // 取消点赞
                     localStorage.removeItem(storageKey);
                     updateUI(false);
-                    // 前端计数减一（但不低于 0）
+                    // 乐观更新：前端计数减一
                     currentCount = Math.max(0, currentCount - 1);
                     updateCountUI(currentCount);
+                    
+                    // 调用 DELETE API 同步后端
+                    try {
+                        const fetchOptions: RequestInit = cfUrl 
+                            ? { method: 'DELETE' } 
+                            : { 
+                                method: 'DELETE', 
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id, type })
+                            };
+                        
+                        const res = await fetch(apiUrl, fetchOptions);
+                        const data = await res.json();
+                        if (data && typeof data.count === 'number') {
+                            currentCount = data.count;
+                            updateCountUI(currentCount);
+                        }
+                    } catch (err) {
+                        console.debug('Unlike API call failed:', err);
+                    }
                 } else {
                     // 点赞
                     localStorage.setItem(storageKey, 'true');
                     updateUI(true);
                     animateLike();
                     
-                    // 乐观更新计数
+                    // 乐观更新：前端计数加一
                     currentCount += 1;
                     updateCountUI(currentCount);
                     
-                    // 静默调用 API
+                    // 调用 POST API 同步后端
                     try {
-                        const apiUrl = cfUrl 
-                            ? `${cfUrl.replace(/\/$/, '')}/like/${id}`
-                            : '/api/like';
-                        
                         const fetchOptions: RequestInit = cfUrl 
                             ? { method: 'POST' } 
                             : { 
@@ -154,7 +173,6 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
 
                         const res = await fetch(apiUrl, fetchOptions);
                         const data = await res.json();
-                        // 如果后端返回了精确的最新计数，同步一下
                         if (data && typeof data.count === 'number') {
                             currentCount = data.count;
                             updateCountUI(currentCount);
