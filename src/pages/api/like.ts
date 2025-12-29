@@ -1,17 +1,48 @@
-// Astro API Route: 记录点赞
-// POST /api/like - 接收 { id, type } 记录一次点赞
+// src/pages/api/like.ts
+// 适配 Cloudflare Pages KV 的点赞接口 (支持 GET 查询和 POST 增加)
 
-// 注意：Astro 静态构建模式下 API 路由只在开发时工作
-// 生产环境需要启用 SSR 或使用 Vercel/Netlify 适配器
-
-// 简单的内存存储（重启后会清空，仅用于开发测试）
-const likeStore: Record<string, number> = {};
-
-export const prerender = false; // 禁用预渲染，使其成为动态端点
+export const prerender = false;
 
 import type { APIRoute } from 'astro';
 
-export const POST: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request, locals }) => {
+    try {
+        const url = new URL(request.url);
+        const id = url.searchParams.get('id');
+
+        if (!id) {
+            return new Response(
+                JSON.stringify({ error: 'Missing id' }),
+                { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+
+        const runtime = (locals as any).runtime;
+        const BLOG_LIKES = runtime?.env?.BLOG_LIKES;
+
+        if (!BLOG_LIKES) {
+            // 开发环境下或未配置 KV 时返回 0，不报错以防止 UI 崩溃
+            return new Response(JSON.stringify({ count: 0 }), {
+                status: 200, headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        const key = `post_likes:${id}`;
+        const count = parseInt(await BLOG_LIKES.get(key) || "0");
+
+        return new Response(
+            JSON.stringify({ id, count }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+    } catch (error) {
+        return new Response(
+            JSON.stringify({ count: 0 }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+    }
+};
+
+export const POST: APIRoute = async ({ request, locals }) => {
     try {
         const body = await request.json();
         const { id, type } = body;
@@ -23,18 +54,24 @@ export const POST: APIRoute = async ({ request }) => {
             );
         }
 
-        const key = `${type}:${id}`;
+        const runtime = (locals as any).runtime;
+        const BLOG_LIKES = runtime?.env?.BLOG_LIKES;
 
-        // 增加计数
-        if (!likeStore[key]) {
-            likeStore[key] = 0;
+        if (!BLOG_LIKES) {
+            return new Response(
+                JSON.stringify({ success: true, count: 1, message: 'Local mode' }),
+                { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
         }
-        likeStore[key]++;
 
-        console.log(`[Like] ${key} -> ${likeStore[key]}`);
+        const key = `post_likes:${id}`;
+        const currentCount = parseInt(await BLOG_LIKES.get(key) || "0");
+        const newCount = currentCount + 1;
+
+        await BLOG_LIKES.put(key, newCount.toString());
 
         return new Response(
-            JSON.stringify({ success: true, key, count: likeStore[key] }),
+            JSON.stringify({ success: true, id, count: newCount }),
             { status: 200, headers: { 'Content-Type': 'application/json' } }
         );
     } catch (error) {

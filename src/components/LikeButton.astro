@@ -10,14 +10,16 @@ interface Props {
 
 const { id, type } = Astro.props;
 const storageKey = `like_${type}_${id}`;
+const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
 ---
 
-<div class="like-container flex justify-center py-6">
+<div class="like-container flex flex-col items-center justify-center py-6 gap-2">
     <button 
-        class="like-button w-14 h-14 rounded-full border-2 border-primary/50 hover:border-primary flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 text-primary/60 hover:text-primary"
+        class="like-button w-14 h-14 rounded-full border-2 border-primary/50 hover:border-primary flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 text-primary/60 hover:text-primary relative"
         data-id={id}
         data-type={type}
         data-storage-key={storageKey}
+        data-cf-url={cfWorkerUrl}
         aria-label="点赞"
     >
         <!-- 空心大拇指 (未点赞) -->
@@ -44,6 +46,8 @@ const storageKey = `like_${type}_${id}`;
             <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 0 1 6 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183 1.016-.062 1.349.312l.383.426c.478.533.113 1.357-.604 1.469a4.957 4.957 0 0 0-1.08.336c-.02.005-.039.01-.058.014v.002l-.057.012-.002.001-.072.016-.001.001a5.018 5.018 0 0 0-.206.064c.213.718.596 1.368 1.1 1.913.167.18.166.467-.024.627a.537.537 0 0 1-.358.136h-.162c-.355 0-.65-.287-.75-.632a7.441 7.441 0 0 1-.35-2.248c0-.26.013-.517.04-.772a.495.495 0 0 1 .492-.447h.25c.305 0 .548.25.495.554a5.96 5.96 0 0 0-.033.722c0 .49.058.965.168 1.419.041.169.015.35-.064.504l-.07.137c-.09.174-.276.286-.476.286h-.064Zm7.83-12.108a.87.87 0 0 1-.006.01l-.002.002a8.961 8.961 0 0 1-1.72 2.024c-.672.56-1.484 1.04-2.36 1.391l.002.001a.743.743 0 0 1-.258.046h-.001a.758.758 0 0 1-.69-.463 3.55 3.55 0 0 1-.24-1.304v-.368c0-.092 0-.183.006-.274a.758.758 0 0 1 .757-.704l.033.001c.358.008.713.055 1.059.14.31.077.623.178.929.303a7.465 7.465 0 0 0 1.976-1.675c.225-.28.426-.577.6-.89a.75.75 0 0 1 1.29.002 3.743 3.743 0 0 1 .627 2.083c0 .41.336.746.747.746h2.485c.843 0 1.584.567 1.69 1.4.062.47.093.95.093 1.435 0 2.58-.86 4.96-2.31 6.868a2.25 2.25 0 0 1-1.794.897H13.48a2.247 2.247 0 0 1-.71-.115l-3.114-1.04a2.997 2.997 0 0 0-.95-.154H7.493Z" />
         </svg>
     </button>
+    <!-- 点赞数显示 -->
+    <span class="like-count text-xs font-medium text-text-muted-light dark:text-text-muted-dark tabular-nums"></span>
 </div>
 
 <script>
@@ -56,11 +60,36 @@ const storageKey = `like_${type}_${id}`;
             const type = (button as HTMLElement).dataset.type!;
             const emptyIcon = button.querySelector('.like-icon-empty') as HTMLElement;
             const filledIcon = button.querySelector('.like-icon-filled') as HTMLElement;
+            const countDisplay = button.parentElement?.querySelector('.like-count') as HTMLElement;
             
             // 检查是否已点赞
-            const isLiked = localStorage.getItem(storageKey) === 'true';
+            let isLiked = localStorage.getItem(storageKey) === 'true';
             updateUI(isLiked);
+            fetchCount();
             
+            async function fetchCount() {
+                try {
+                    const cfUrl = (button as HTMLElement).dataset.cfUrl;
+                    const fetchUrl = cfUrl 
+                        ? `${cfUrl.replace(/\/$/, '')}/stats/${id}`
+                        : `/api/like?id=${id}`;
+                    
+                    const res = await fetch(fetchUrl);
+                    const data = await res.json();
+                    if (data && typeof data.count === 'number') {
+                        updateCountUI(data.count);
+                    }
+                } catch (err) {
+                    console.debug('Fetch count failed:', err);
+                }
+            }
+
+            function updateCountUI(count: number) {
+                if (countDisplay) {
+                    countDisplay.textContent = count > 0 ? `${count} 人觉得很赞` : '';
+                }
+            }
+
             function updateUI(liked: boolean) {
                 if (liked) {
                     emptyIcon.classList.add('hidden');
@@ -88,22 +117,42 @@ const storageKey = `like_${type}_${id}`;
                 e.stopPropagation();
                 
                 const wasLiked = localStorage.getItem(storageKey) === 'true';
+                const cfUrl = (button as HTMLElement).dataset.cfUrl;
                 
                 if (wasLiked) {
                     localStorage.removeItem(storageKey);
                     updateUI(false);
+                    // 注意：取消点赞逻辑在简易版中通常不处理后端减一，这里仅保持前端状态
                 } else {
                     localStorage.setItem(storageKey, 'true');
                     updateUI(true);
                     animateLike();
                     
+                    // 乐观更新 UI 上的计数
+                    const currentText = countDisplay.textContent || '0';
+                    const currentNum = parseInt(currentText) || 0;
+                    updateCountUI(currentNum + 1);
+                    
                     // 静默调用 API
                     try {
-                        await fetch('/api/like', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id, type })
-                        });
+                        const apiUrl = cfUrl 
+                            ? `${cfUrl.replace(/\/$/, '')}/like/${id}`
+                            : '/api/like';
+                        
+                        const fetchOptions: RequestInit = cfUrl 
+                            ? { method: 'POST' } 
+                            : { 
+                                method: 'POST', 
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id, type })
+                            };
+
+                        const res = await fetch(apiUrl, fetchOptions);
+                        const data = await res.json();
+                        // 如果后端返回了精确的最新计数，同步一下
+                        if (data && typeof data.count === 'number') {
+                            updateCountUI(data.count);
+                        }
                     } catch (err) {
                         console.debug('Like API call failed:', err);
                     }
