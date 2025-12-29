@@ -33,11 +33,11 @@
     
     <div class="flex flex-col items-center gap-1 mb-8">
       <h2 class="stranger-font text-5xl sm:text-6xl text-transparent tracking-widest leading-none text-center">
-        STRANGER <br/> THINGS
+        NEW YEAR <br/> 2026
       </h2>
       <div class="flex items-center gap-4 mt-2">
-        <span class="text-3xl text-red-600 font-bold border-2 border-red-600 px-2 rounded box-shadow-neon">5</span>
-        <span class="text-xl sm:text-2xl text-red-500 font-serif tracking-widest uppercase">Part 2</span>
+        <span class="text-3xl text-red-600 font-bold border-2 border-red-600 px-2 rounded box-shadow-neon">1</span>
+        <span class="text-xl sm:text-2xl text-red-500 font-serif tracking-widest uppercase">Jan</span>
       </div>
     </div>
     
@@ -64,7 +64,7 @@
     </div>
     
     <p class="mt-6 text-red-800/80 text-xs tracking-[0.2em] font-serif uppercase animate-pulse">
-       The Beginning of the End
+       The Future is Coming
     </p>
   </div>
 </div>
@@ -149,16 +149,8 @@
 
 <script>
   function updateCountdown() {
-    // Target: Stranger Things Season 5 Part 2 (Dec 25, 2025)
-    // Using simple date string parsing which defaults to local time or UTC depending on browser. 
-    // Ideally we'd use '2025-12-25T17:00:00-08:00' for PT, but for a fun blog widget local midnight or 5PM is close enough.
-    // Let's target 5PM PT (UTC-8) -> Dec 26 01:00 UTC approximately
-    // Or just "Christmas Day" broadly. Let's aim for Midnight UTC to be safe or just local.
-    // Given the specific request: "Dec 25, 2025".
-    
-    const targetDate = new Date('December 25, 2025 17:00:00 PST').getTime(); 
-    // If PST parsing fails in some environments, fallback to a generally safe string
-    // const targetDate = new Date('2025-12-25T17:00:00-08:00').getTime();
+    // Target: New Year 2026 (Jan 1, 2026)
+    const targetDate = new Date('January 1, 2026 00:00:00').getTime(); 
 
     const now = new Date().getTime();
     const distance = targetDate - now;
@@ -167,7 +159,7 @@
        // Released!
        const el = document.getElementById('days');
        if(el?.parentElement?.parentElement) {
-         el.parentElement.parentElement.innerHTML = '<div class="text-4xl text-red-600 font-bold animate-pulse">RELEASED</div>';
+         el.parentElement.parentElement.innerHTML = '<div class="text-4xl text-red-600 font-bold animate-pulse">HAPPY NEW YEAR</div>';
        }
        return;
     }
