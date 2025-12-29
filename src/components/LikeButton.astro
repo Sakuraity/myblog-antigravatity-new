@@ -65,6 +65,9 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
             // 内部状态跟踪
             let currentCount = 0;
             let isLiked = localStorage.getItem(storageKey) === 'true';
+            let isProcessing = false; // 防止快速点击的锁
+            let latestRequestId = 0;  // 用于忽略过时的响应
+            
             updateUI(isLiked);
             fetchCount();
             
@@ -118,6 +121,16 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
                 e.preventDefault();
                 e.stopPropagation();
                 
+                // 防止快速点击：如果正在处理中，忽略此次点击
+                if (isProcessing) {
+                    return;
+                }
+                isProcessing = true;
+                
+                // 为本次请求分配唯一 ID
+                latestRequestId += 1;
+                const thisRequestId = latestRequestId;
+                
                 const wasLiked = localStorage.getItem(storageKey) === 'true';
                 const cfUrl = (button as HTMLElement).dataset.cfUrl;
                 const apiUrl = cfUrl 
@@ -144,7 +157,8 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
                         
                         const res = await fetch(apiUrl, fetchOptions);
                         const data = await res.json();
-                        if (data && typeof data.count === 'number') {
+                        // 只处理最新请求的响应
+                        if (thisRequestId === latestRequestId && data && typeof data.count === 'number') {
                             currentCount = data.count;
                             updateCountUI(currentCount);
                         }
@@ -173,7 +187,8 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
 
                         const res = await fetch(apiUrl, fetchOptions);
                         const data = await res.json();
-                        if (data && typeof data.count === 'number') {
+                        // 只处理最新请求的响应
+                        if (thisRequestId === latestRequestId && data && typeof data.count === 'number') {
                             currentCount = data.count;
                             updateCountUI(currentCount);
                         }
@@ -181,6 +196,9 @@ const cfWorkerUrl = import.meta.env.PUBLIC_CF_WORKER_URL || '';
                         console.debug('Like API call failed:', err);
                     }
                 }
+                
+                // 解锁，允许下一次点击
+                isProcessing = false;
             });
         });
     }
