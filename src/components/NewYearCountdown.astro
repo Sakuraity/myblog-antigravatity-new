@@ -126,7 +126,10 @@
        if(el?.closest('.sketch-container')) {
          const container = el.closest('.sketch-container');
          if (container) {
-             container.querySelector('.flex-wrap').innerHTML = '<div class="text-5xl text-red-600 font-bold sketch-font animate-bounce text-center">HAPPY NEW YEAR!</div>';
+             const flexWrap = container.querySelector('.flex-wrap');
+             if (flexWrap) {
+                 flexWrap.innerHTML = '<div class="text-5xl text-red-600 font-bold sketch-font animate-bounce text-center">HAPPY NEW YEAR!</div>';
+             }
          }
        }
        return;
