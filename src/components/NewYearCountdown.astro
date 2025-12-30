@@ -1,0 +1,153 @@
+---
+---
+
+<div class="sketch-container items-center justify-center p-8 select-none relative group w-full h-full min-h-[450px] flex overflow-hidden">
+  <!-- Paper Texture Background -->
+  <div class="absolute inset-0 bg-[#f8f5e6] z-0"></div>
+  <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=\'6\' height=\'6\' viewBox=\'0 0 6 6\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'1\' fill-rule=\'evenodd\'%3E%3Cpath d=\'M5 0h1L0 6V5zM6 5v1H5z\'/%3E%3C/g%3E%3C/svg%3E');"></div>
+
+  <!-- Doodles/Confetti Background (CSS only) -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="doodle doodle-1 text-2xl absolute top-10 left-10 text-blue-500 opacity-60 rotate-12">★</div>
+    <div class="doodle doodle-2 text-xl absolute top-20 right-20 text-red-500 opacity-60 -rotate-12">●</div>
+    <div class="doodle doodle-3 text-3xl absolute bottom-20 left-16 text-yellow-500 opacity-60 rotate-45">✦</div>
+    <div class="doodle doodle-4 text-xl absolute bottom-10 right-10 text-green-500 opacity-60 -rotate-6">■</div>
+    <div class="doodle doodle-5 text-2xl absolute top-1/2 left-4 text-purple-500 opacity-40 rotate-[30deg]">~</div>
+     <div class="doodle doodle-6 text-2xl absolute top-12 left-1/2 text-orange-500 opacity-50 rotate-[60deg]">+</div>
+  </div>
+
+  <div class="relative z-10 flex flex-col items-center justify-center w-full max-w-lg transform transition-transform duration-300 hover:scale-[1.02]">
+    
+    <!-- Title Section -->
+    <div class="mb-10 text-center relative">
+      <h2 class="sketch-font text-6xl sm:text-7xl text-gray-800 leading-none relative inline-block">
+        New Year
+        <span class="absolute -top-6 -right-8 text-4xl transform rotate-12 text-red-500 animate-bounce">2026!</span>
+      </h2>
+       <div class="w-full h-2 bg-black/10 rounded-full mt-2 transform -rotate-1 skew-x-12 blur-[1px]"></div>
+    </div>
+
+    <!-- Countdown Timer -->
+    <div class="flex flex-wrap justify-center gap-4 sm:gap-6 w-full">
+      
+      <div class="sketch-box flex flex-col items-center justify-center w-20 h-24 sm:w-24 sm:h-28 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] transform -rotate-2">
+        <span id="days" class="sketch-digit text-3xl sm:text-4xl font-bold text-gray-800">00</span>
+        <span class="text-sm font-bold text-gray-500 uppercase tracking-widest mt-1 sketch-label">Days</span>
+      </div>
+
+      <div class="sketch-box flex flex-col items-center justify-center w-20 h-24 sm:w-24 sm:h-28 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] transform rotate-1">
+        <span id="hours" class="sketch-digit text-3xl sm:text-4xl font-bold text-gray-800">00</span>
+        <span class="text-sm font-bold text-gray-500 uppercase tracking-widest mt-1 sketch-label">Hrs</span>
+      </div>
+
+      <div class="sketch-box flex flex-col items-center justify-center w-20 h-24 sm:w-24 sm:h-28 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] transform -rotate-1">
+        <span id="minutes" class="sketch-digit text-3xl sm:text-4xl font-bold text-gray-800">00</span>
+        <span class="text-sm font-bold text-gray-500 uppercase tracking-widest mt-1 sketch-label">Min</span>
+      </div>
+
+      <div class="sketch-box flex flex-col items-center justify-center w-20 h-24 sm:w-24 sm:h-28 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] transform rotate-2">
+        <span id="seconds" class="sketch-digit text-3xl sm:text-4xl font-bold text-gray-800">00</span>
+        <span class="text-sm font-bold text-gray-500 uppercase tracking-widest mt-1 sketch-label">Sec</span>
+      </div>
+
+    </div>
+
+    <p class="mt-12 text-gray-600 text-lg sm:text-xl sketch-font transform -rotate-1">
+       Making it count...
+    </p>
+
+  </div>
+</div>
+
+<style>
+  /* Import a handwriting font */
+  @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+
+  .sketch-font {
+    font-family: 'Patrick Hand', cursive;
+  }
+  
+  .sketch-digit {
+    font-family: 'Patrick Hand', cursive;
+  }
+
+  .sketch-label {
+    font-family: 'Patrick Hand', cursive;
+  }
+
+  /* Make the boxes look hand-drawn with uneven generic border-radius */
+  .sketch-box {
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    transition: all 0.3s ease;
+  }
+  
+  .sketch-box:hover {
+      transform: scale(1.1) rotate(0deg) !important;
+      box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+  }
+
+  .doodle {
+      animation: float 6s ease-in-out infinite;
+  }
+  
+  .doodle-1 { animation-delay: 0s; }
+  .doodle-2 { animation-delay: 1s; }
+  .doodle-3 { animation-delay: 2s; }
+  .doodle-4 { animation-delay: 3s; }
+  .doodle-5 { animation-delay: 1.5s; }
+   .doodle-6 { animation-delay: 0.5s; }
+
+  @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(var(--tw-rotate)); }
+      50% { transform: translateY(-10px) rotate(var(--tw-rotate)); }
+  }
+
+  /* Container rough border */
+  .sketch-container {
+      /* Optional: if we want the container itself to look sketched, but maybe overkill inside the section */
+  }
+
+</style>
+
+<script>
+  function updateCountdown() {
+    // Target: New Year 2026 (Jan 1, 2026)
+    const targetDate = new Date('January 1, 2026 00:00:00').getTime(); 
+    
+    // For testing/preview: set a closer date
+    // const targetDate = new Date().getTime() + 10000000;
+
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    if (distance < 0) {
+       // Released!
+       const el = document.getElementById('days');
+       if(el?.closest('.sketch-container')) {
+         const container = el.closest('.sketch-container');
+         if (container) {
+             container.querySelector('.flex-wrap').innerHTML = '<div class="text-5xl text-red-600 font-bold sketch-font animate-bounce text-center">HAPPY NEW YEAR!</div>';
+         }
+       }
+       return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    const updateElement = (id: string, value: number) => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = value.toString().padStart(2, '0');
+    };
+
+    updateElement('days', days);
+    updateElement('hours', hours);
+    updateElement('minutes', minutes);
+    updateElement('seconds', seconds);
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+</script>

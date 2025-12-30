@@ -27,14 +27,18 @@ const relatedPosts = allPosts
 <Layout title={post.data.title}>
 	<article class="py-12 md:py-20">
 		<!-- Header -->
-		<div class="max-w-4xl mx-auto px-6 mb-12">
-			<div class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark mb-6">
+		<div class="max-w-[600px] mx-auto px-6 mb-16 md:mb-20 text-center">
+			<div class="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark mb-6">
 				<span>{post.data.category || 'Essay'}</span>
 			</div>
-			<h1 class="text-3xl md:text-5xl font-serif font-bold text-text-light dark:text-text-dark leading-tight mb-6">
+			<h1 class="text-[2.5rem] leading-[1.2] font-serif font-medium text-text-light dark:text-text-dark mb-8">
 				{post.data.title}
 			</h1>
-			<div class="flex items-center gap-4 text-sm text-text-muted-light dark:text-text-muted-dark font-light">
+			
+			<!-- Decorative Divider -->
+			<div class="w-10 h-px bg-gray-300 dark:bg-gray-700 mx-auto mb-8"></div>
+
+			<div class="flex items-center justify-center gap-4 text-sm text-text-muted-light dark:text-text-muted-dark font-light">
 				<time datetime={post.data.pubDate.toISOString()}>
 					{post.data.pubDate.toLocaleDateString('zh-CN', {
 						year: 'numeric',
@@ -49,40 +53,40 @@ const relatedPosts = allPosts
 
 		<!-- Hero Image -->
 		{post.data.heroImage && (
-			<div class="w-full h-[300px] md:h-[600px] bg-gray-100 dark:bg-gray-800 mb-16 overflow-hidden">
+			<div class="max-w-[800px] mx-auto h-[300px] md:h-[500px] bg-gray-100 dark:bg-gray-800 mb-16 overflow-hidden rounded-sm">
 				<Image 
 					src={post.data.heroImage} 
 					alt={post.data.title} 
 					class="w-full h-full object-cover" 
-					width={1920}
-					height={1080}
+					width={1200}
+					height={675}
 				/>
 			</div>
 		)}
 
 		<!-- Audio Player -->
 		{post.data.audioUrl && (
-			<div class="max-w-2xl mx-auto px-6 mb-12">
+			<div class="max-w-[600px] mx-auto px-6 mb-12">
 				<AudioPlayer url={post.data.audioUrl} title="收听本文" />
 			</div>
 		)}
 
 		<!-- Content -->
-		<div class="max-w-2xl mx-auto px-6">
-			<div class="prose prose-lg md:prose-xl dark:prose-invert prose-p:font-serif prose-p:font-light prose-headings:font-normal prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg prose-p:leading-relaxed">
+		<div class="max-w-[600px] mx-auto px-6">
+			<div class="prose prose-lg dark:prose-invert prose-p:font-sans prose-p:text-[1.125rem] prose-p:leading-[1.8] prose-p:text-[#333] dark:prose-p:text-[#e0e0e0] prose-headings:font-serif prose-headings:font-normal prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg">
 				{post.data.description && (
 					<>
-						<p class="text-xl md:text-2xl leading-relaxed font-serif text-text-light/90 dark:text-text-dark/90 italic mb-12">
+						<p class="text-xl leading-relaxed font-serif text-text-light/90 dark:text-text-dark/90 italic mb-12 text-center">
 							{post.data.description}
 						</p>
-						<hr class="w-24 border-t border-black/10 dark:border-white/10 my-12" />
+						<hr class="w-24 border-t border-black/10 dark:border-white/10 my-12 mx-auto" />
 					</>
 				)}
 				<Content />
 			</div>
 			
 			<!-- 点赞按钮 -->
-			<div class="mt-12 pt-8 border-t border-black/5 dark:border-white/10">
+			<div class="mt-16 pt-8 border-t border-black/5 dark:border-white/10 flex justify-center">
 				<LikeButton id={post.slug} type="post" />
 			</div>
 		</div>
