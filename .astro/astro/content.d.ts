@@ -227,6 +227,13 @@ declare module 'astro:content' {
   collection: "notes";
   data: InferEntrySchema<"notes">
 } & { render(): Render[".md"] };
+"2025-12-30-youmind-records.md": {
+	id: "2025-12-30-youmind-records.md";
+  slug: "2025-12-30-youmind-records";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
 };
 "posts": {
 "2025-year-end-review/index.md": {
