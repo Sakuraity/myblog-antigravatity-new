@@ -299,6 +299,13 @@ declare module 'astro:content' {
   collection: "posts";
   data: any
 } & { render(): Render[".md"] };
+"ventilator-usage-journal/index.md": {
+	id: "ventilator-usage-journal/index.md";
+  slug: "ventilator-usage-journal";
+  body: string;
+  collection: "posts";
+  data: any
+} & { render(): Render[".md"] };
 "vibe-coding-后的一些思考/index.md": {
 	id: "vibe-coding-后的一些思考/index.md";
   slug: "vibe-coding-后的一些思考";
