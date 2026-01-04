@@ -141,9 +141,37 @@ declare module 'astro:content' {
 
 	type ContentEntryMap = {
 		"library": {
-"example-book.md": {
-	id: "example-book.md";
-  slug: "example-book";
+"book-crossing-the-chasm.md": {
+	id: "book-crossing-the-chasm.md";
+  slug: "book-crossing-the-chasm";
+  body: string;
+  collection: "library";
+  data: InferEntrySchema<"library">
+} & { render(): Render[".md"] };
+"book-grass-harp.md": {
+	id: "book-grass-harp.md";
+  slug: "book-grass-harp";
+  body: string;
+  collection: "library";
+  data: InferEntrySchema<"library">
+} & { render(): Render[".md"] };
+"book-hillbilly-elegy.md": {
+	id: "book-hillbilly-elegy.md";
+  slug: "book-hillbilly-elegy";
+  body: string;
+  collection: "library";
+  data: InferEntrySchema<"library">
+} & { render(): Render[".md"] };
+"book-obviously-awesome.md": {
+	id: "book-obviously-awesome.md";
+  slug: "book-obviously-awesome";
+  body: string;
+  collection: "library";
+  data: InferEntrySchema<"library">
+} & { render(): Render[".md"] };
+"book-self-as-method.md": {
+	id: "book-self-as-method.md";
+  slug: "book-self-as-method";
   body: string;
   collection: "library";
   data: InferEntrySchema<"library">
@@ -230,6 +258,13 @@ declare module 'astro:content' {
 "2025-12-30-youmind-records.md": {
 	id: "2025-12-30-youmind-records.md";
   slug: "2025-12-30-youmind-records";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
+"2026-01-03-cpap-experience.md": {
+	id: "2026-01-03-cpap-experience.md";
+  slug: "2026-01-03-cpap-experience";
   body: string;
   collection: "notes";
   data: InferEntrySchema<"notes">
