@@ -399,6 +399,11 @@ async function processFile(filePath, sourceDir = null) {
         if (!content.trim().startsWith('---')) {
             const title = extractTitleFromContent(content);
             const frontmatter = await createFrontmatter(title, content, null, audioUrl);
+
+            // Remove Title (H1) from content body to avoid duplication with Frontmatter matches
+            // We use the same regex logic as extractSummaryFromContent
+            content = content.replace(/^#\s+(.*$)/m, '').trim();
+
             content = frontmatter + content;
         }
 
