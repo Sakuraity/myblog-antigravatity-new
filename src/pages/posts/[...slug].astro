@@ -27,7 +27,7 @@ const relatedPosts = allPosts
 <Layout title={post.data.title}>
 	<article class="py-12 md:py-20">
 		<!-- Header -->
-		<div class="max-w-[600px] mx-auto px-6 mb-16 md:mb-20 text-center">
+		<div class="max-w-[728px] mx-auto px-6 mb-16 md:mb-20 text-center">
 			<div class="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark mb-6">
 				<span>{post.data.category || 'Essay'}</span>
 			</div>
@@ -66,14 +66,14 @@ const relatedPosts = allPosts
 
 		<!-- Audio Player -->
 		{post.data.audioUrl && (
-			<div class="max-w-[600px] mx-auto px-6 mb-12">
+			<div class="max-w-[728px] mx-auto px-6 mb-12">
 				<AudioPlayer url={post.data.audioUrl} title="收听本文" />
 			</div>
 		)}
 
 		<!-- Content -->
-		<div class="max-w-[600px] mx-auto px-6">
-			<div class="prose prose-lg dark:prose-invert prose-p:font-sans prose-p:text-[1.125rem] prose-p:leading-[1.8] prose-p:text-[#333] dark:prose-p:text-[#e0e0e0] prose-headings:font-serif prose-headings:font-normal prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg">
+		<div class="max-w-[728px] mx-auto px-6">
+			<div class="prose prose-lg dark:prose-invert max-w-none prose-p:font-sans prose-p:text-[19px] prose-p:leading-[1.6] prose-p:text-[#363737] dark:prose-p:text-[#e0e0e0] prose-headings:font-serif prose-headings:font-normal prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg prose-p:mb-5">
 				{post.data.description && (
 					<>
 						<p class="text-xl leading-relaxed font-serif text-text-light/90 dark:text-text-dark/90 italic mb-12 text-center">

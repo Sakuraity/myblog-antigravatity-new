@@ -21,7 +21,6 @@
         "@fontsource/eb-garamond": "^5.2.7",
         "@fontsource/inter": "^5.2.8",
         "@fontsource/noto-serif-sc": "^5.2.8",
-        "@fontsource/playfair-display": "^5.2.8",
         "@tailwindcss/typography": "^0.5.19",
         "astro": "^4.0.0",
         "pagefind": "^1.4.0",
