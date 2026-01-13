@@ -10,6 +10,9 @@ interface Props {
 
 const { content, date, tags, truncate = false } = Astro.props;
 
+// Generate a truly unique ID using crypto
+const safeId = `note-${crypto.randomUUID()}`;
+
 // ... (date formatting remains same)
 
 // Format date with time
@@ -51,7 +54,7 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
         <!-- Content -->
         <!-- Content -->
         <div 
-            id={`note-content-${formattedDate}-${formattedTime}`}
+            id={safeId}
             class={`prose prose-sm dark:prose-invert max-w-none text-text-light dark:text-text-dark transition-all duration-500 ease-in-out ${truncate ? 'max-h-32 overflow-hidden relative' : ''}`}
         >
             {content ? <Fragment set:html={content} /> : <slot />}
@@ -59,7 +62,7 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
             {truncate && (
                 <div class="read-more-overlay absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-bg-light dark:from-bg-dark to-transparent flex items-end justify-center pb-0 pointer-events-none">
                     <button 
-                        data-target={`note-content-${formattedDate}-${formattedTime}`}
+                        data-target={safeId}
                         class="read-more-btn pointer-events-auto text-xs font-medium text-primary hover:underline bg-bg-light/80 dark:bg-bg-dark/80 px-3 py-1 rounded-full shadow-sm border border-black/5 dark:border-white/10 backdrop-blur-sm transition-all hover:bg-bg-light dark:hover:bg-bg-dark group-hover/btn:scale-105"
                     >
                         Read more &darr;
@@ -118,7 +121,8 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
                     // Clear expanded state classes
                     const card = container.closest('.note-card');
                     if (card) card.classList.remove('expanded-card');
-                    const notesContainer = container.closest('.space-y-6');
+                    // Use more generic selector to match any space-y variant (space-y-6, space-y-10, etc.)
+                    const notesContainer = container.closest('[class*="space-y-"]') || container.closest('.notes-area');
                     if (notesContainer) notesContainer.classList.remove('has-expanded-note');
                     
                     // Restore button text
@@ -128,10 +132,28 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
                 } else {
                     // Expand
                     // First, close all other expanded notes (Accordion behavior)
+                    // Use direct DOM manipulation instead of simulating clicks to avoid race conditions
                     document.querySelectorAll('.prose.expanded').forEach(other => {
                        if (other.id !== targetId) {
-                           const otherBtn = other.querySelector('.read-more-btn');
-                           if (otherBtn) (otherBtn as HTMLElement).click();
+                           // Directly collapse this note
+                           other.classList.remove('expanded');
+                           other.classList.add('max-h-32', 'overflow-hidden');
+                           
+                           // Find and reset its overlay/button
+                           const otherBtn = document.querySelector(`.read-more-btn[data-target="${other.id}"]`) as HTMLElement;
+                           if (otherBtn) {
+                               const otherOverlay = otherBtn.parentElement;
+                               if (otherOverlay) {
+                                   otherOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                                   otherOverlay.classList.add('flex');
+                                   otherOverlay.style.background = '';
+                               }
+                               otherBtn.innerHTML = 'Read more &darr;';
+                           }
+                           
+                           // Clear card state
+                           const otherCard = other.closest('.note-card');
+                           if (otherCard) otherCard.classList.remove('expanded-card');
                        } 
                     });
 
@@ -150,7 +172,8 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
                     if (card) card.classList.add('expanded-card');
                     
                     // Add state class to parent container for "dim others" effect
-                    const notesContainer = container.closest('.space-y-6'); // Finding the parent list container
+                    // Use more generic selector to match any space-y variant (space-y-6, space-y-10, etc.)
+                    const notesContainer = container.closest('[class*="space-y-"]') || container.closest('.notes-area');
                     if (notesContainer) notesContainer.classList.add('notes-container', 'has-expanded-note');
 
                     // Auto-focus: Scroll to the card top

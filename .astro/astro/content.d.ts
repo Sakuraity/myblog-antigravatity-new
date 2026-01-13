@@ -297,6 +297,27 @@ declare module 'astro:content' {
   collection: "notes";
   data: InferEntrySchema<"notes">
 } & { render(): Render[".md"] };
+"2026-01-13-palantir-research.md": {
+	id: "2026-01-13-palantir-research.md";
+  slug: "2026-01-13-palantir-research";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
+"2026-01-13-system-experience.md": {
+	id: "2026-01-13-system-experience.md";
+  slug: "2026-01-13-system-experience";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
+"2026-01-13-youmind-renewal.md": {
+	id: "2026-01-13-youmind-renewal.md";
+  slug: "2026-01-13-youmind-renewal";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
 };
 "posts": {
 "2025-year-end-review/index.md": {
@@ -379,6 +400,13 @@ declare module 'astro:content' {
 "智能简史1：不要试图一开始就构建完美的系统/index.md": {
 	id: "智能简史1：不要试图一开始就构建完美的系统/index.md";
   slug: "智能简史1不要试图一开始就构建完美的系统";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".md"] };
+"深度-ai-逼-出电网革命-以美国电网建设为例/index.md": {
+	id: "深度-ai-逼-出电网革命-以美国电网建设为例/index.md";
+  slug: "深度-ai-逼-出电网革命-以美国电网建设为例";
   body: string;
   collection: "posts";
   data: InferEntrySchema<"posts">
