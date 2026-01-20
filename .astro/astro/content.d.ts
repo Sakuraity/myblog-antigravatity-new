@@ -169,6 +169,13 @@ declare module 'astro:content' {
   collection: "library";
   data: InferEntrySchema<"library">
 } & { render(): Render[".md"] };
+"book-kingdom-of-ice.md": {
+	id: "book-kingdom-of-ice.md";
+  slug: "book-kingdom-of-ice";
+  body: string;
+  collection: "library";
+  data: InferEntrySchema<"library">
+} & { render(): Render[".md"] };
 "book-obviously-awesome.md": {
 	id: "book-obviously-awesome.md";
   slug: "book-obviously-awesome";
@@ -314,6 +321,20 @@ declare module 'astro:content' {
 "2026-01-13-youmind-renewal.md": {
 	id: "2026-01-13-youmind-renewal.md";
   slug: "2026-01-13-youmind-renewal";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
+"2026-01-21-focus-and-wandering.md": {
+	id: "2026-01-21-focus-and-wandering.md";
+  slug: "2026-01-21-focus-and-wandering";
+  body: string;
+  collection: "notes";
+  data: InferEntrySchema<"notes">
+} & { render(): Render[".md"] };
+"2026-01-21-taste-drivers-input-filter-discernment.md": {
+	id: "2026-01-21-taste-drivers-input-filter-discernment.md";
+  slug: "2026-01-21-taste-drivers-input-filter-discernment";
   body: string;
   collection: "notes";
   data: InferEntrySchema<"notes">
