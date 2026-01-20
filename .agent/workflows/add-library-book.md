@@ -40,7 +40,7 @@ This workflow guides you through adding a new book to the `src/content/library/`
         status: "[status]"
         # rating: [rating] (OMIT this field if rating is 0 or undefined, do not set to 0)
         link: "https://book.douban.com/subject/[ID]/"
-        comment: "[Book Description from Douban - first 1-2 sentences of intro]"
+        comment: '[Book Description from Douban - first 1-2 sentences of intro, USE SINGLE QUOTES to avoid YAML parse errors]'
         date: [YYYY-MM-DD]
         coverImage: "/images/library-covers/[kebab-title].jpg"
         ---
