@@ -222,25 +222,6 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
             }
         }); 
         
-        // Also hook into the collapse logic in the button click handler to clear classes
-        // We need to modify the collapse block above, but it's inside the big loop.
-        // Let's rely on the fact that when we collapse, we should check if any others are open?
-        // Actually, our logic is "Accordion" -> only one open.
-        // So if we collapse the current one, we are clearing everything.
-        
-        // Wait, I can't easily modify the collapse block above without replacing the whole function again in this tool.
-        // I should have replaced the whole function. The current replacement is partial.
-        // Let me verify where the previous replacement block starts/ends.
-        // It starts at `(btn as HTMLElement).innerHTML = 'Collapse &uarr;';` inside the `else` (Expand) block.
-        // So I only modified the EXPAND logic.
-        // I need to modify the COLLAPSE logic too to remove the classes.
-        
-        // Since I cannot modify "non-contiguous" or "far away" lines in one replace call easily if I didn't select them,
-        // and I only selected the end of the Expand block.
-        
-        // I will let this replacement apply to the EXPAND block.
-        // then I will make another call to fix the COLLAPSE block.
-
 
 
     }
@@ -278,7 +259,7 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
     }
     
     /* Dark mode shadow adjustment */
-    :global(.html-dark .notes-container.has-expanded-note) .note-card.expanded-card {
+    :global(.dark .notes-container.has-expanded-note) .note-card.expanded-card {
         box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
     }
 
@@ -302,7 +283,7 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
         margin-bottom: 0.75rem;
     }
     
-    .html-dark .note-card .prose img {
+    .dark .note-card .prose img {
         background-color: rgb(255 255 255 / 0.05);
     }
 

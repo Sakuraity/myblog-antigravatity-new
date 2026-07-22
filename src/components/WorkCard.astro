@@ -12,15 +12,15 @@ interface Props {
 const { title, description, link, tags, featured } = Astro.props;
 ---
 
-<article class="group relative flex flex-col bg-gray-50 dark:bg-white/5 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+<article class="group relative flex flex-col bg-surface-light dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
     {featured && (
         <div class="absolute top-3 right-3 z-10">
             <span class="px-2 py-1 text-xs font-medium bg-primary text-white rounded-full">Featured</span>
         </div>
     )}
     
-    <div class="aspect-video bg-gray-100 dark:bg-white/10 flex items-center justify-center">
-        <span class="text-4xl opacity-20">🚀</span>
+    <div class="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/5 flex items-center justify-center">
+        <span class="font-serif text-5xl text-primary/40 select-none">{title.charAt(0)}</span>
     </div>
     
     <div class="p-6 flex flex-col flex-grow">

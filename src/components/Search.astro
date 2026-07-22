@@ -78,7 +78,15 @@
         font-weight: 400 !important;
         color: var(--pagefind-ui-text) !important;
         transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
-        width: 200px !important;
+        width: 100% !important;
+        max-width: 200px !important;
+    }
+
+    @media (max-width: 640px) {
+        .pagefind-ui__search-input {
+            max-width: 130px !important;
+            padding: 0.5rem 0.75rem !important;
+        }
     }
 
     .pagefind-ui__search-input::placeholder {

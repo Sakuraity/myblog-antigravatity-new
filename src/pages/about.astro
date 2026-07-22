@@ -1,28 +1,28 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import NewYearCountdown from '../components/NewYearCountdown.astro';
+import { SITE } from '../config';
 ---
 
-<Layout title="关于我 | Kangyuan's Blog">
+<Layout title="关于我 | Kangyuan's Blog" description="关于 Kangyuan 和这个博客。">
 	<article class="max-w-2xl mx-auto py-12">
 		<header class="text-center mb-12">
 			<h1 class="text-4xl font-serif font-bold mb-4">About Me</h1>
 			<p class="text-xl text-text-muted-light dark:text-text-muted-dark italic font-serif">
-				装修中！
+				安放思考，自由表达，分享创造。
 			</p>
 		</header>
-		
-		<div class="prose prose-lg dark:prose-invert mx-auto font-sans">
-			<NewYearCountdown />
-			
 
-			
+		<div class="prose prose-lg dark:prose-invert mx-auto font-sans">
+			<p>
+				你好，我是 Kangyuan。这里是我记录思考、笔记与创造的地方 —— 关于产品、技术、商业与生活的一些观察。
+			</p>
+
 			<hr />
-			
+
 			<h3>联系我</h3>
 			<ul>
-				<li>Email: <a href="mailto:your-email@example.com">your-email@example.com</a></li>
-				<li>GitHub: <a href="https://github.com/yourusername">@yourusername</a></li>
+				<li>Email: <a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+				<li>GitHub: <a href={SITE.social.github} target="_blank" rel="noopener noreferrer">@{SITE.githubHandle}</a></li>
 			</ul>
 
 		</div>
