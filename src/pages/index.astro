@@ -104,13 +104,12 @@ const typeStamp = {
 						})}
 					</time>
 
-					<div class="note-body">
-						<p class="note-quote">{latestNote.snippet || '一条新闪念'}</p>
-						<a href="/notes" class="note-more">
-							<span class="note-more-zh">看看我在想些什么</span>
-							<span class="note-more-en">What's rattling up here →</span>
-						</a>
-					</div>
+					<p class="note-quote">{latestNote.snippet || '一条新闪念'}</p>
+
+					<a href="/notes" class="note-more">
+						<span class="note-more-zh">看看我在想些什么</span>
+						<span class="note-more-en">What's rattling up here →</span>
+					</a>
 				</article>
 			</section>
 		)}
@@ -238,17 +237,15 @@ const typeStamp = {
 
 	/* Notes: magazine spread */
 	.note-spread {
-		display: grid;
-		grid-template-columns: 7.25rem minmax(0, 1fr);
-		gap: 1.25rem 1.75rem;
-		align-items: start;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 		padding-top: 0.35rem;
 		border-top: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
 	}
 
 	.note-date {
 		display: block;
-		padding-top: 0.2rem;
 		font-size: 0.7rem;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
@@ -257,10 +254,10 @@ const typeStamp = {
 
 	.note-quote {
 		margin: 0;
-		max-width: 32rem;
+		width: 100%;
 		font-family: "EB Garamond", "Noto Serif SC", serif;
 		font-size: clamp(0.98rem, 1.35vw, 1.12rem);
-		line-height: 1.7;
+		line-height: 1.75;
 		color: color-mix(in srgb, var(--ink) 82%, transparent);
 		text-wrap: pretty;
 	}
@@ -268,36 +265,40 @@ const typeStamp = {
 	.note-more {
 		display: inline-flex;
 		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.15rem;
-		margin-top: 1.25rem;
+		align-items: flex-end;
+		align-self: flex-end;
+		gap: 0.2rem;
+		margin-top: 0.35rem;
 		text-decoration: none;
-		color: inherit;
+		color: #777;
+		transition: color 0.2s ease, transform 0.2s ease;
 	}
 
 	.note-more-zh {
-		font-family: "EB Garamond", "Noto Serif SC", serif;
-		font-size: 0.98rem;
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
 		transition: color 0.2s ease;
 	}
 
 	.note-more-en {
 		font-size: 0.68rem;
-		font-style: italic;
-		letter-spacing: 0.04em;
-		color: color-mix(in srgb, var(--ink) 48%, transparent);
-		transition: color 0.2s ease, transform 0.2s ease;
+		font-weight: 600;
+		font-style: normal;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		transition: color 0.2s ease;
 	}
 
-	.note-more:hover .note-more-zh,
-	.note-more:focus-visible .note-more-zh {
+	.note-more:hover,
+	.note-more:focus-visible {
 		color: var(--hot);
+		transform: translateX(2px);
+		outline: none;
 	}
 
-	.note-more:hover .note-more-en,
-	.note-more:focus-visible .note-more-en {
-		color: var(--hot);
-		transform: translateX(3px);
+	:global(.dark) .note-more {
+		color: #a1a1aa;
 	}
 
 	/* Library */
@@ -525,11 +526,6 @@ const typeStamp = {
 	}
 
 	@media (max-width: 768px) {
-		.note-spread {
-			grid-template-columns: 1fr;
-			gap: 0.7rem;
-		}
-
 		.shelf {
 			height: 13.5rem;
 		}
