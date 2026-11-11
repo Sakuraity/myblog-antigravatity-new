@@ -1,193 +1,574 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import NoteCard from '../components/NoteCard.astro';
-import LibraryCard from '../components/LibraryCard.astro';
 
 const posts = (await getCollection('posts')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-).slice(0, 5);
+);
+const latest = posts[0];
 
-const notesRaw = (await getCollection('notes')).sort(
-    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-).slice(0, 3); // Reduced to 3 for cleaner look
+const latestNoteEntry = (await getCollection('notes'))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())[0];
 
-const notes = await Promise.all(notesRaw.map(async (note) => {
-    const { Content } = await note.render();
-    return { note, Content };
-}));
+const latestNote = latestNoteEntry
+	? {
+			date: latestNoteEntry.data.date,
+			snippet: (() => {
+				const text = latestNoteEntry.body
+					.replace(/<[^>]+>/g, ' ')
+					.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+					.replace(/https?:\/\/\S+/g, ' ')
+					.replace(/^[#>*\-\d.\s]+/gm, '')
+					.replace(/\s+/g, ' ')
+					.trim();
+				if (text.length <= 140) return text;
+				return `${text.slice(0, 140).replace(/\s+\S*$/, '')}…`;
+			})(),
+		}
+	: null;
 
-const libraryItems = (await getCollection('library')).sort(
-    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-).slice(0, 4); // 4 items for a balanced grid
+const libraryItems = (await getCollection('library'))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.slice(0, 4);
+
+const coverSrc = (cover?: { src: string } | string) =>
+	typeof cover === 'string' ? cover : cover?.src;
+
+const typeStamp = {
+	music: 'Music',
+	video: 'Video',
+	book: 'Book',
+} as const;
 ---
 
 <Layout title="Kangyuan's Blog">
-	<!-- Hero Section -->
-	<section class="min-h-[45vh] flex flex-col justify-center py-20 relative overflow-hidden">
-		<div class="max-w-3xl flex flex-col gap-6">
-			<h1 class="font-serif font-normal tracking-tight text-text-light dark:text-text-dark leading-tight">
-                <span class="block text-4xl md:text-5xl lg:text-7xl mb-2">Hammer Seeking Nail</span>
-                <span class="block text-2xl md:text-3xl lg:text-4xl text-primary font-normal italic">
-                    Logic <span class="mx-1">·</span> Emotion <span class="mx-1">·</span> Elegance
-                </span>
+	<div class="home max-w-3xl pt-4 md:pt-20 pb-24">
+		<header class="masthead">
+			<h1 class="font-serif font-normal tracking-tight text-text-light dark:text-text-dark leading-[1.05] text-[2.4rem] sm:text-5xl md:text-6xl">
+				Hammer Seeking Nails
 			</h1>
-			<p class="text-lg md:text-xl text-text-muted-light dark:text-text-muted-dark max-w-2xl leading-relaxed opacity-80 font-sans">
-				安放思考，自由表达，分享创造
+			<p class="slogan-line mt-6 md:mt-8 font-serif italic text-[1.35rem] sm:text-2xl md:text-[2.05rem] leading-snug" aria-label="Logic, Emotion, Elegance">
+				<span class="slogan-word" style="animation-delay: 0s">Logic</span>
+				<span class="slogan-dot" aria-hidden="true">·</span>
+				<span class="slogan-word" style="animation-delay: 2.2s">Emotion</span>
+				<span class="slogan-dot" aria-hidden="true">·</span>
+				<span class="slogan-word" style="animation-delay: 4.4s">Elegance</span>
 			</p>
+		</header>
 
-            <div class="flex gap-4 pt-4">
-                <a href="/blog" class="px-6 py-2 bg-text-light dark:bg-white text-bg-light dark:text-black font-medium rounded-full hover:opacity-90 transition-opacity">
-                    Read Essays
-                </a>
-                <a href="/about" class="px-6 py-2 border border-black/10 dark:border-white/10 text-text-light dark:text-text-dark font-medium rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                    About Me
-                </a>
-            </div>
-		</div>
-	</section>
+		{latest && (
+			<article class="feature mt-24 md:mt-36">
+				<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-medium uppercase tracking-[0.22em] text-text-muted-light dark:text-text-muted-dark">
+					<span class="text-primary">Essay</span>
+					<span class="h-px w-8 bg-primary/80" aria-hidden="true"></span>
+					{latest.data.category && <span>{latest.data.category}</span>}
+					<time datetime={latest.data.pubDate.toISOString()}>
+						{latest.data.pubDate.toLocaleDateString('zh-CN', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric',
+						})}
+					</time>
+				</div>
 
-	<div class="space-y-32 pb-20">
-		<!-- Featured Essays Section -->
-		<section>
-			<div class="flex items-end justify-between mb-12">
-				<h2 class="font-serif text-3xl font-bold text-text-light dark:text-text-dark relative inline-block">
-                    Latest Essays
-                    <span class="absolute -bottom-2 left-0 w-12 h-1 bg-primary rounded-full"></span>
-                </h2>
-				<a href="/blog" class="group flex items-center gap-2 text-sm font-medium text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
-					View Archive 
-					<span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
-				</a>
+				<h2 class="mt-6 font-serif font-normal text-[1.7rem] leading-[1.35] sm:text-3xl md:text-[2.2rem] text-text-light dark:text-text-dark text-balance">
+					<a href={`/posts/${latest.slug}/`} class="hover:text-primary transition-colors duration-300">
+						{latest.data.title}
+					</a>
+				</h2>
+
+				<p class="mt-5 max-w-lg font-serif text-base md:text-lg leading-[1.7] text-text-light/75 dark:text-text-dark/75">
+					{latest.data.description}
+				</p>
+
+				<div class="mt-10 flex items-baseline justify-between gap-8 border-t border-black/10 dark:border-white/10 pt-6">
+					<a href={`/posts/${latest.slug}/`} class="group inline-flex items-center gap-2 font-serif text-lg text-text-light dark:text-text-dark hover:text-primary transition-colors">
+						阅读这篇
+						<span class="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
+					</a>
+					<a href="/blog" class="text-[11px] font-medium uppercase tracking-[0.2em] text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
+						全部文章
+					</a>
+				</div>
+			</article>
+		)}
+
+		{latestNote && (
+			<section class="note-mag mt-24 md:mt-32" aria-label="Latest note">
+				<article class="note-spread">
+					<time class="note-date" datetime={latestNote.date.toISOString()}>
+						{latestNote.date.toLocaleDateString('zh-CN', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric',
+						})}
+					</time>
+
+					<p class="note-quote">{latestNote.snippet || '一条新闪念'}</p>
+
+					<a href="/notes" class="note-more">
+						<span class="note-more-zh">看看我在想些什么</span>
+						<span class="note-more-en">What's rattling up here →</span>
+					</a>
+				</article>
+			</section>
+		)}
+
+		<section class="studio mt-24 md:mt-32" aria-label="Library">
+			<div class="studio-head">
+				<p class="stamp">Library</p>
+				<a href="/library" class="studio-more">完整收藏</a>
 			</div>
-			
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-				{posts.map((post) => (
-					<article class="group relative flex flex-col p-6 bg-surface-light dark:bg-white/5 rounded-2xl border border-black/5 dark:border-white/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-						<div class="mb-4 flex items-center gap-3 text-xs font-medium text-text-muted-light dark:text-text-muted-dark">
-							<time datetime={post.data.pubDate.toISOString()} class="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded">
-								{post.data.pubDate.toLocaleDateString('zh-CN', {
-									year: 'numeric',
-									month: 'short',
-									day: 'numeric',
-								})}
-							</time>
-                            {post.data.category && (
-                                <span class="text-primary tracking-wide uppercase">{post.data.category}</span>
-                            )}
-						</div>
-						
-						<h3 class="text-xl font-serif font-bold leading-snug text-text-light dark:text-text-dark mb-3 group-hover:text-primary transition-colors">
-							<a href={`/posts/${post.slug}/`}>
-								<span class="absolute inset-0"></span>
-								{post.data.title}
-							</a>
-						</h3>
-						
-						<p class="text-sm text-text-muted-light dark:text-text-muted-dark leading-relaxed line-clamp-3 mb-4 flex-grow">
-							{post.data.description}
-						</p>
 
-						<div class="pt-4 border-t border-black/5 dark:border-white/5 flex items-center justify-between">
-                            <div class="flex flex-wrap gap-2">
-                                {post.data.tags && post.data.tags.slice(0, 3).map(tag => (
-                                    <span class="text-xs font-medium text-text-muted-light dark:text-text-muted-dark bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded">
-                                        #{tag}
-                                    </span>
-                                ))}
-                            </div>
-                            <span class="text-primary text-sm opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0">
-                                Read &rarr;
-                            </span>
-						</div>
-					</article>
-				))}
-                
-                <!-- "More" Card -->
-                <a href="/blog" class="group flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-dashed border-black/5 dark:border-white/10 hover:border-primary/30 hover:bg-primary/5 transition-all text-center">
-                    <span class="text-3xl mb-2 text-text-muted-light dark:text-text-muted-dark group-hover:text-primary transition-colors">&rarr;</span>
-                    <span class="font-serif font-medium text-lg text-text-light dark:text-text-dark">Explore more essays</span>
-                </a>
+			<div class="shelf" data-shelf>
+				{libraryItems.map((item, index) => {
+					const src = coverSrc(item.data.coverImage);
+					const subtitle = item.data.type === 'music'
+						? item.data.artist
+						: item.data.type === 'book'
+							? item.data.author
+							: item.data.source;
+					return (
+						<a
+							href="/library"
+							class="cover"
+							style={`--i: ${index}; --bob-delay: ${index * 0.4}s`}
+							data-title={item.data.title}
+							data-sub={subtitle || typeStamp[item.data.type]}
+							data-kind={typeStamp[item.data.type]}
+						>
+							<span class="cover-stamp">{typeStamp[item.data.type]}</span>
+							{src ? (
+								<img src={src} alt={item.data.title} loading="lazy" />
+							) : (
+								<span class="cover-fallback">{item.data.title.slice(0, 1)}</span>
+							)}
+						</a>
+					);
+				})}
+			</div>
+
+			<div class="shelf-caption" data-shelf-caption>
+				<p class="shelf-kind" data-shelf-kind>{typeStamp[libraryItems[0]?.data.type ?? 'book']}</p>
+				<p class="shelf-title" data-shelf-title>{libraryItems[0]?.data.title}</p>
+				<p class="shelf-sub" data-shelf-sub>
+					{libraryItems[0]?.data.type === 'music'
+						? libraryItems[0]?.data.artist
+						: libraryItems[0]?.data.type === 'book'
+							? libraryItems[0]?.data.author
+							: libraryItems[0]?.data.source}
+				</p>
 			</div>
 		</section>
-
-		<!-- Split Section: Notes & Library -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
-            <!-- Notes Column -->
-            <section class="lg:col-span-12 xl:col-span-7">
-                <div class="flex items-end justify-between mb-10">
-                    <h2 class="font-serif text-3xl font-bold text-text-light dark:text-text-dark relative inline-block">
-                        Fleeting Notes
-                        <span class="absolute -bottom-2 left-0 w-12 h-1 bg-primary rounded-full"></span>
-                    </h2>
-                    <a href="/notes" class="group flex items-center gap-2 text-sm font-medium text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
-                        All Notes 
-                        <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
-                    </a>
-                </div>
-
-                <div class="relative">
-                    <!-- Vertical Line for timeline -->
-                    <div class="absolute left-[3px] top-4 bottom-4 w-0.5 bg-gray-100 dark:bg-white/5"></div>
-                    
-                    <div class="space-y-10 pl-2">
-                        {notes.map(({ note, Content }) => (
-                            <div class="relative pl-8">
-                                <!-- Dot moved to component or handle here? NoteCard has its own line. 
-                                     Let's use NoteCard as is, but maybe wrap it differently. 
-                                     Actually NoteCard has `border-l-2` built in. 
-                                     Let's hide my custom line above and use NoteCard's built-in 
-                                     but style it better via container. -->
-                                <NoteCard 
-                                    date={note.data.date}
-                                    tags={note.data.tags}
-                                    truncate={true}
-                                >
-                                    <Content />
-                                </NoteCard>
-                            </div>
-                        ))}
-                        {notes.length === 0 && (
-                             <p class="text-text-muted-light dark:text-text-muted-dark text-sm italic pl-8">No notes yet.</p>
-                        )}
-                    </div>
-                </div>
-            </section>
-
-            <!-- Library/Collections Column -->
-            <section class="lg:col-span-12 xl:col-span-5">
-                <div class="flex items-end justify-between mb-10">
-                    <h2 class="font-serif text-3xl font-bold text-text-light dark:text-text-dark relative inline-block">
-                        Recent Collections
-                        <span class="absolute -bottom-2 left-0 w-12 h-1 bg-primary rounded-full"></span>
-                    </h2>
-                    <a href="/library" class="group flex items-center gap-2 text-sm font-medium text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
-                        Full Library 
-                        <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                     {libraryItems.map(item => (
-                        <LibraryCard 
-                            type={item.data.type}
-                            title={item.data.title}
-                            artist={item.data.artist}
-                            spotifyUrl={item.data.spotifyUrl}
-                            source={item.data.source}
-                            videoId={item.data.videoId}
-                            author={item.data.author}
-                            status={item.data.status}
-                            rating={item.data.rating}
-                            link={item.data.link}
-                            comment={item.data.comment}
-                            date={item.data.date}
-                            coverImage={item.data.coverImage}
-                            hidePlayer={true}
-                        />
-                    ))}
-                </div>
-            </section>
-        </div>
 	</div>
 </Layout>
+
+<script>
+	function initShelfCaption() {
+		const shelf = document.querySelector('[data-shelf]');
+		const kind = document.querySelector('[data-shelf-kind]');
+		const title = document.querySelector('[data-shelf-title]');
+		const sub = document.querySelector('[data-shelf-sub]');
+		if (!(shelf instanceof HTMLElement) || !kind || !title || !sub || shelf.dataset.ready) return;
+		shelf.dataset.ready = 'true';
+
+		const apply = (cover: Element | null) => {
+			if (!(cover instanceof HTMLElement)) return;
+			kind.textContent = cover.dataset.kind || '';
+			title.textContent = cover.dataset.title || '';
+			sub.textContent = cover.dataset.sub || '';
+		};
+
+		shelf.querySelectorAll('.cover').forEach((cover) => {
+			cover.addEventListener('mouseenter', () => apply(cover));
+			cover.addEventListener('focus', () => apply(cover));
+		});
+	}
+
+	document.addEventListener('astro:page-load', initShelfCaption);
+</script>
+
+<style>
+	.home {
+		--ink: #1a1a1a;
+		--paper: #fffdf8;
+		--scrap: #fff8ec;
+		--hot: #d00000;
+	}
+
+	:global(.dark) .home {
+		--ink: #f3f0e7;
+		--paper: #1c1c21;
+		--scrap: #26232b;
+	}
+
+	.masthead {
+		animation: mast-in 1s ease both;
+	}
+
+	.feature,
+	.note-mag,
+	.studio {
+		animation: mast-in 1.05s ease 0.18s both;
+	}
+
+	.slogan-line {
+		--quiet: #555555;
+		--hot: #d00000;
+	}
+
+	:global(.dark) .slogan-line {
+		--quiet: #a1a1aa;
+	}
+
+	.slogan-word {
+		display: inline-block;
+		color: var(--quiet);
+		opacity: 0.45;
+		animation: slogan-speak 6.6s ease-in-out infinite;
+	}
+
+	.slogan-dot {
+		display: inline-block;
+		margin-inline: 0.4em;
+		color: var(--quiet);
+		opacity: 0.4;
+	}
+
+	/* Notes: magazine spread */
+	.note-spread {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		padding-top: 0.35rem;
+		border-top: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+	}
+
+	.note-date {
+		display: block;
+		font-size: 0.7rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--ink) 48%, transparent);
+	}
+
+	.note-quote {
+		margin: 0;
+		width: 100%;
+		font-family: "EB Garamond", "Noto Serif SC", serif;
+		font-size: clamp(0.98rem, 1.35vw, 1.12rem);
+		line-height: 1.75;
+		color: color-mix(in srgb, var(--ink) 82%, transparent);
+		text-wrap: pretty;
+	}
+
+	.note-more {
+		display: inline-flex;
+		flex-direction: column;
+		align-items: flex-end;
+		align-self: flex-end;
+		gap: 0.2rem;
+		margin-top: 0.35rem;
+		text-decoration: none;
+		color: #777;
+		transition: color 0.2s ease, transform 0.2s ease;
+	}
+
+	.note-more-zh {
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		transition: color 0.2s ease;
+	}
+
+	.note-more-en {
+		font-size: 0.68rem;
+		font-weight: 600;
+		font-style: normal;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		transition: color 0.2s ease;
+	}
+
+	.note-more:hover,
+	.note-more:focus-visible {
+		color: var(--hot);
+		transform: translateX(2px);
+		outline: none;
+	}
+
+	:global(.dark) .note-more {
+		color: #a1a1aa;
+	}
+
+	/* Library */
+	.studio-head {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.stamp {
+		display: inline-block;
+		margin: 0;
+		padding: 0.18rem 0.58rem 0.12rem;
+		border: 1.5px dashed var(--hot);
+		border-radius: 0.55rem 0.95rem 0.45rem 0.85rem / 0.75rem 0.5rem 0.9rem 0.55rem;
+		color: var(--hot);
+		font-family: "EB Garamond", "Noto Serif SC", serif;
+		font-size: 0.78rem;
+		font-style: italic;
+		font-weight: 500;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		transform: rotate(-4deg);
+		opacity: 0.92;
+	}
+
+	.studio-more {
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: #777;
+		transition: color 0.2s ease, transform 0.2s ease;
+	}
+
+	.studio-more:hover {
+		color: var(--hot);
+		transform: translateX(2px);
+	}
+
+	.shelf {
+		position: relative;
+		height: 16rem;
+		margin-top: 0.35rem;
+		isolation: isolate;
+	}
+
+	.cover {
+		--spread: 4.55rem;
+		--tilt: calc((var(--i) - 1.5) * 7deg);
+		position: absolute;
+		top: 1.35rem;
+		left: 50%;
+		width: clamp(7.4rem, 21vw, 9.2rem);
+		aspect-ratio: 1;
+		overflow: hidden;
+		border: 1.75px solid color-mix(in srgb, var(--ink) 82%, transparent);
+		border-radius: 1.05rem 1.35rem 0.95rem 1.25rem / 1.2rem 0.95rem 1.35rem 1.05rem;
+		background: var(--paper);
+		box-shadow:
+			3px 3px 0 color-mix(in srgb, var(--ink) 55%, transparent),
+			0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent);
+		transform:
+			translateX(calc(-50% + (var(--i) - 1.5) * var(--spread)))
+			rotate(var(--tilt))
+			translateY(0)
+			scale(1);
+		transform-origin: 50% 85%;
+		animation: cover-bob 3.4s ease-in-out var(--bob-delay) infinite;
+		transition:
+			transform 0.38s cubic-bezier(0.22, 1.15, 0.28, 1),
+			box-shadow 0.38s ease,
+			filter 0.38s ease,
+			z-index 0s;
+		z-index: calc(10 + var(--i));
+	}
+
+	.cover img,
+	.cover-fallback {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.cover-fallback {
+		display: grid;
+		place-items: center;
+		font-family: "EB Garamond", "Noto Serif SC", serif;
+		font-size: 2.5rem;
+		background: #f3e7d4;
+		color: var(--hot);
+	}
+
+	.cover-stamp {
+		position: absolute;
+		top: 0.5rem;
+		left: 0.5rem;
+		z-index: 2;
+		padding: 0.12rem 0.42rem 0.08rem;
+		border: 1.5px dashed color-mix(in srgb, var(--ink) 70%, transparent);
+		border-radius: 0.45rem 0.75rem 0.4rem 0.7rem / 0.65rem 0.4rem 0.75rem 0.45rem;
+		background: color-mix(in srgb, var(--scrap) 92%, white);
+		color: color-mix(in srgb, var(--ink) 78%, transparent);
+		font-family: "EB Garamond", "Noto Serif SC", serif;
+		font-size: 0.62rem;
+		font-style: italic;
+		font-weight: 500;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		transform: rotate(-6deg);
+		box-shadow: 1.5px 1.5px 0 color-mix(in srgb, var(--ink) 28%, transparent);
+	}
+
+	:global(.dark) .cover-stamp {
+		background: #2b2730;
+	}
+
+	/* Dock-like focus: hovered grows, neighbors ease aside and shrink a little */
+	.shelf:hover .cover,
+	.shelf:focus-within .cover {
+		--spread: 5.35rem;
+		animation-play-state: paused;
+		filter: saturate(0.88) brightness(0.97);
+		transform:
+			translateX(calc(-50% + (var(--i) - 1.5) * var(--spread)))
+			rotate(calc((var(--i) - 1.5) * 3deg))
+			translateY(-0.2rem)
+			scale(0.92);
+	}
+
+	.cover:hover,
+	.cover:focus-visible {
+		z-index: 40;
+		filter: none;
+		box-shadow:
+			5px 7px 0 color-mix(in srgb, var(--ink) 45%, transparent),
+			0 14px 28px color-mix(in srgb, var(--ink) 12%, transparent);
+		transform:
+			translateX(calc(-50% + (var(--i) - 1.5) * var(--spread)))
+			rotate(-1deg)
+			translateY(-1.15rem)
+			scale(1.2);
+		outline: none;
+	}
+
+	.shelf-caption {
+		margin-top: 1.2rem;
+		text-align: center;
+		min-height: 4.5rem;
+	}
+
+	.shelf-kind {
+		margin: 0;
+		color: var(--hot);
+		font-family: "EB Garamond", "Noto Serif SC", serif;
+		font-size: 0.78rem;
+		font-style: italic;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.shelf-title {
+		margin: 0.4rem 0 0;
+		font-family: "EB Garamond", "Noto Serif SC", serif;
+		font-size: 1.15rem;
+		line-height: 1.3;
+	}
+
+	.shelf-sub {
+		margin: 0.25rem 0 0;
+		color: #777;
+		font-size: 0.92rem;
+	}
+
+	:global(.dark) .shelf-sub {
+		color: #a1a1aa;
+	}
+
+	@keyframes mast-in {
+		from {
+			opacity: 0;
+			transform: translateY(0.7rem);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	@keyframes slogan-speak {
+		0%,
+		42%,
+		100% {
+			color: var(--quiet);
+			opacity: 0.45;
+			transform: translateY(0);
+		}
+		12%,
+		28% {
+			color: var(--hot);
+			opacity: 1;
+			transform: translateY(-0.08em);
+		}
+	}
+
+	@keyframes cover-bob {
+		0%,
+		100% {
+			transform:
+				translateX(calc(-50% + (var(--i) - 1.5) * var(--spread)))
+				rotate(var(--tilt))
+				translateY(0)
+				scale(1);
+		}
+		50% {
+			transform:
+				translateX(calc(-50% + (var(--i) - 1.5) * var(--spread)))
+				rotate(calc(var(--tilt) + 1.1deg))
+				translateY(-0.42rem)
+				scale(1);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.shelf {
+			height: 13.5rem;
+		}
+
+		.cover {
+			--spread: 2.85rem;
+			width: 6.35rem;
+		}
+
+		.shelf:hover .cover,
+		.shelf:focus-within .cover {
+			--spread: 3.35rem;
+		}
+
+		.cover:hover,
+		.cover:focus-visible {
+			transform:
+				translateX(calc(-50% + (var(--i) - 1.5) * var(--spread)))
+				rotate(-1deg)
+				translateY(-0.85rem)
+				scale(1.14);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.masthead,
+		.feature,
+		.note-mag,
+		.studio,
+		.slogan-word,
+		.cover {
+			animation: none;
+		}
+
+		.slogan-word {
+			color: var(--hot);
+			opacity: 1;
+		}
+
+		.cover {
+			transform:
+				translateX(calc(-50% + (var(--i) - 1.5) * var(--spread)))
+				rotate(var(--tilt));
+		}
+	}
+</style>
