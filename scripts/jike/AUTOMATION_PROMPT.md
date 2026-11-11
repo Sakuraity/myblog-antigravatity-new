@@ -35,10 +35,14 @@ Hard rules:
 5. If a private/deleted post was never synced → skip it.
 6. After changes: commit and push DIRECTLY to `main`. Do NOT open a pull request.
 7. If nothing changed: do not commit; end with "no Jike changes".
-8. Prefer the helper scripts:
+8. Prefer the helper scripts (Playwright fetch is the reliable path):
    - `node scripts/jike/list-synced.mjs`
+   - `node scripts/jike/fetch-public-posts.mjs --exclude-synced --limit 20 --out /tmp/jike-fetch.json`
+   - `node scripts/jike/build-plan-from-fetch.mjs --from /tmp/jike-fetch.json --out /tmp/jike-sync-plan.json`
+   - merge any `removals` from visibility checks into that plan
    - `node scripts/jike/apply-sync.mjs --plan /tmp/jike-sync-plan.json`
-9. **Date rule (critical):** `createdAt` must be the original Jike publish time (`+08:00`). Never use the automation run time. Both the note filename date and frontmatter `date` must follow publish time. Resolve from API/embedded JSON (`createdAt` or `actionTime`); UI labels like `06:53` / `2天前` are not enough. If you cannot resolve an absolute publish time, skip that post.
+   - If Playwright browsers are missing: `npx playwright install chromium`
+9. **Date rule (critical):** `createdAt` must be the original Jike publish time (`+08:00`). The fetch helper already converts API UTC timestamps. Never use the automation run time. If absolute publish time cannot be resolved, skip that post.
 
 Visibility checks:
 - For each postId from list-synced, open https://m.okjike.com/originalPosts/<postId>

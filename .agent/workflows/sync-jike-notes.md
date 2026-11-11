@@ -56,46 +56,24 @@ Collect removals:
 { "postId": "...", "reason": "private_or_deleted" }
 ```
 
-### 3. Discover recent public posts from the profile
+### 3. Discover recent public posts (preferred: Playwright helper)
 
-Open the **mobile** profile page and collect recent public posts (enough to cover since the previous run; typically last 1–3 days / first few screens).
+Prefer the deterministic fetcher (captures API JSON + absolute `createdAt`):
 
-For each public post not already in `list-synced` output, open the mobile detail page and extract:
-
-- `postId`
-- `createdAt` — **required: the original Jike publish time**, timezone `+08:00`  
-  - Do **not** use the sync/run clock  
-  - Filename date (`YYYY-MM-DD-...`) and frontmatter `date` both come from this publish time  
-  - UI often shows only `HH:mm` / `N天前`. Resolve absolute time from page data, not the visible label:
-    1. Prefer Network / embedded JSON (`createdAt` or `actionTime`)
-    2. On mobile detail/profile pages, inspect `__NEXT_DATA__` carefully — shape may be `pageProps.posts[]`, not `pageProps.post`
-    3. Convert UTC `Z` timestamps to `+08:00`
-    4. Double-check `postId` against the address bar (easy to mistype)
-    5. If still impossible, skip that post and report it (do **not** use sync/run time)
-- `text` (original wording)
-- `images` (all image URLs)
-- `slugHint` (short English kebab slug from meaning; optional)
-
-Skip anything not clearly public.
-
-### 4. Apply the plan with the deterministic script
-
-Write `/tmp/jike-sync-plan.json`:
-
-```json
-{
-  "removals": [{ "postId": "...", "reason": "private_or_deleted" }],
-  "upserts": [
-    {
-      "postId": "...",
-      "createdAt": "2026-03-11T12:05:00+08:00",
-      "text": "原文...",
-      "images": ["https://..."],
-      "slugHint": "short-english-slug"
-    }
-  ]
-}
+```bash
+# requires: npx playwright install chromium  (once per environment)
+node scripts/jike/fetch-public-posts.mjs --exclude-synced --limit 20 --out /tmp/jike-fetch.json
+node scripts/jike/build-plan-from-fetch.mjs --from /tmp/jike-fetch.json --out /tmp/jike-sync-plan.json
 ```
+
+Defaults already keep **owner original posts only** (skips other users / reposts).  
+`createdAt` is converted from API UTC `Z` into Asia/Shanghai `+08:00` — never use the sync clock.
+
+Manual browser fallback only if the helper fails: open mobile profile/detail, resolve absolute time from network JSON (`createdAt` / `actionTime`), never from UI labels like `06:53` / `2天前`.
+
+### 4. Merge removals + apply
+
+If step 2 found removals, merge them into `/tmp/jike-sync-plan.json` under `removals`.
 
 Then:
 

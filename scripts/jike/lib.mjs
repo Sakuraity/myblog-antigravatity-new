@@ -3,6 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const JIKE_USER_ID = '815916E7-5BD5-4EC6-9EB1-14458F0E11CE';
+// Internal user id observed in mobile API payloads (distinct from profile UUID slug).
+export const JIKE_INTERNAL_USER_ID = '67964ba52cfadd5e5180c609';
 // web.okjike.com often shows a login wall; public scraping should use mobile web.
 export const JIKE_PROFILE_URL = `https://web.okjike.com/u/${JIKE_USER_ID}`;
 export const JIKE_MOBILE_PROFILE_URL = `https://m.okjike.com/users/${JIKE_USER_ID}`;
