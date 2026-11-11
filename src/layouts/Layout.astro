@@ -153,9 +153,18 @@ const { title, description } = Astro.props;
 					<h4 class="text-xs font-bold uppercase tracking-widest text-text-muted-light dark:text-text-muted-dark mb-4">Connect</h4>
 					<ul class="space-y-2 text-sm">
 						{SITE.social.twitter && (
-							<li><a href={SITE.social.twitter} target="_blank" rel="noopener noreferrer" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">Twitter (X)</a></li>
+							<li><a href={SITE.social.twitter} target="_blank" rel="noopener noreferrer" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">X</a></li>
+						)}
+						{SITE.social.jike && (
+							<li><a href={SITE.social.jike} target="_blank" rel="noopener noreferrer" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">即刻</a></li>
+						)}
+						{SITE.social.wechat && (
+							<li><a href="/about" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">微信</a></li>
 						)}
 						<li><a href={SITE.social.github} target="_blank" rel="noopener noreferrer" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">GitHub</a></li>
+						{SITE.email && (
+							<li><a href={`mailto:${SITE.email}`} class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">Email</a></li>
+						)}
 						<li><a href="/rss.xml" class="text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">RSS</a></li>
 					</ul>
 				</div>

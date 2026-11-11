@@ -1,6 +1,69 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { SITE } from '../config';
+
+type ContactItem = {
+	id: string;
+	label: string;
+	value: string;
+	href?: string;
+	action: 'open' | 'copy';
+	hint: string;
+};
+
+const contacts: ContactItem[] = [];
+
+if (SITE.social.twitter) {
+	contacts.push({
+		id: 'x',
+		label: 'X',
+		value: `@${SITE.social.twitterHandle}`,
+		href: SITE.social.twitter,
+		action: 'open',
+		hint: '打开主页',
+	});
+}
+
+if (SITE.social.jike) {
+	contacts.push({
+		id: 'jike',
+		label: '即刻',
+		value: SITE.social.jikeHandle,
+		href: SITE.social.jike,
+		action: 'open',
+		hint: '打开主页',
+	});
+}
+
+if (SITE.social.wechat) {
+	contacts.push({
+		id: 'wechat',
+		label: '微信',
+		value: SITE.social.wechat,
+		action: 'copy',
+		hint: '点击复制',
+	});
+}
+
+contacts.push({
+	id: 'github',
+	label: 'GitHub',
+	value: `@${SITE.githubHandle}`,
+	href: SITE.social.github,
+	action: 'open',
+	hint: '打开主页',
+});
+
+if (SITE.email) {
+	contacts.push({
+		id: 'email',
+		label: 'Email',
+		value: SITE.email,
+		href: `mailto:${SITE.email}`,
+		action: 'open',
+		hint: '发送邮件',
+	});
+}
 ---
 
 <Layout title="关于我 | Kangyuan's Blog" description="关于 Kangyuan 和这个博客。">
@@ -8,7 +71,7 @@ import { SITE } from '../config';
 		<header class="text-center mb-12">
 			<h1 class="text-4xl font-serif font-bold mb-4">About Me</h1>
 			<p class="text-xl text-text-muted-light dark:text-text-muted-dark italic font-serif">
-				安放思考，自由表达，分享创造。
+				{SITE.tagline}。
 			</p>
 		</header>
 
@@ -16,15 +79,166 @@ import { SITE } from '../config';
 			<p>
 				你好，我是 Kangyuan。这里是我记录思考、笔记与创造的地方 —— 关于产品、技术、商业与生活的一些观察。
 			</p>
+		</div>
 
-			<hr />
+		<section class="mt-14" aria-labelledby="connect-heading">
+			<div class="flex items-baseline justify-between gap-4 mb-6">
+				<h2 id="connect-heading" class="font-serif text-2xl font-bold tracking-tight">
+					联系方式
+				</h2>
+				<p class="text-xs uppercase tracking-[0.18em] text-text-muted-light dark:text-text-muted-dark">
+					Connect
+				</p>
+			</div>
 
-			<h3>联系我</h3>
-			<ul>
-				<li>Email: <a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
-				<li>GitHub: <a href={SITE.social.github} target="_blank" rel="noopener noreferrer">@{SITE.githubHandle}</a></li>
+			<ul class="border-t border-black/10 dark:border-white/10 divide-y divide-black/10 dark:divide-white/10">
+				{contacts.map((item) => (
+					<li>
+						{item.action === 'copy' ? (
+							<button
+								type="button"
+								class="contact-row group w-full text-left"
+								data-copy={item.value}
+								aria-label={`复制微信 ${item.value}`}
+							>
+								<span class="contact-label">{item.label}</span>
+								<span class="contact-value font-mono text-[0.95rem] tracking-wide">{item.value}</span>
+								<span class="contact-action" data-copy-label>
+									{item.hint}
+								</span>
+							</button>
+						) : (
+							<a
+								href={item.href}
+								target={item.href?.startsWith('mailto:') ? undefined : '_blank'}
+								rel={item.href?.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+								class="contact-row group"
+							>
+								<span class="contact-label">{item.label}</span>
+								<span class="contact-value">{item.value}</span>
+								<span class="contact-action" aria-hidden="true">
+									<span class="group-hover:translate-x-0.5 inline-block transition-transform duration-200">→</span>
+								</span>
+							</a>
+						)}
+					</li>
+				))}
 			</ul>
 
-		</div>
+			<p class="mt-5 text-sm text-text-muted-light dark:text-text-muted-dark">
+				日常更常出现在 X 与即刻；微信适合私下聊。
+			</p>
+		</section>
 	</article>
 </Layout>
+
+<style>
+	.contact-row {
+		display: grid;
+		grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 1rem;
+		width: 100%;
+		padding: 1.05rem 0.15rem;
+		color: inherit;
+		text-decoration: none;
+		transition: background-color 180ms ease, color 180ms ease;
+	}
+
+	.contact-row:hover,
+	.contact-row:focus-visible {
+		background-color: color-mix(in srgb, var(--contact-hover, #D00000) 4%, transparent);
+		outline: none;
+	}
+
+	:global(.dark) .contact-row:hover,
+	:global(.dark) .contact-row:focus-visible {
+		background-color: color-mix(in srgb, #ffffff 4%, transparent);
+	}
+
+	.contact-label {
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: #555555;
+	}
+
+	:global(.dark) .contact-label {
+		color: #A1A1AA;
+	}
+
+	.contact-value {
+		font-size: 1.05rem;
+		font-weight: 500;
+		color: #1A1A1A;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	:global(.dark) .contact-value {
+		color: #EDEDED;
+	}
+
+	.contact-action {
+		font-size: 0.75rem;
+		letter-spacing: 0.04em;
+		color: #555555;
+		opacity: 0.72;
+		transition: opacity 180ms ease, color 180ms ease;
+		white-space: nowrap;
+	}
+
+	:global(.dark) .contact-action {
+		color: #A1A1AA;
+	}
+
+	.contact-row:hover .contact-action,
+	.contact-row:focus-visible .contact-action {
+		opacity: 1;
+		color: #D00000;
+	}
+
+	@media (max-width: 520px) {
+		.contact-row {
+			grid-template-columns: 4.25rem minmax(0, 1fr);
+			grid-template-rows: auto auto;
+			row-gap: 0.35rem;
+		}
+
+		.contact-action {
+			grid-column: 2;
+			justify-self: start;
+		}
+	}
+</style>
+
+<script>
+	function bindCopyButtons() {
+		document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+			if (button.dataset.bound === 'true') return;
+			button.dataset.bound = 'true';
+
+			button.addEventListener('click', async () => {
+				const value = button.dataset.copy;
+				const label = button.querySelector('[data-copy-label]');
+				if (!value || !label) return;
+
+				const previous = label.textContent;
+				try {
+					await navigator.clipboard.writeText(value);
+					label.textContent = '已复制';
+				} catch {
+					label.textContent = '复制失败';
+				}
+
+				window.setTimeout(() => {
+					label.textContent = previous;
+				}, 1600);
+			});
+		});
+	}
+
+	bindCopyButtons();
+	document.addEventListener('astro:page-load', bindCopyButtons);
+</script>

@@ -12,12 +12,16 @@ export const SITE = {
 
     // 作者信息
     author: "Kangyuan",
-    email: "hello@example.com", // TODO: 替换为你的真实邮箱
+    email: "", // 暂未公开；填入真实邮箱后 about / footer 会自动显示
     githubHandle: "Sakuraity",
 
     // 社交链接（footer 与 about 页引用）
     social: {
         github: "https://github.com/Sakuraity",
-        twitter: "", // TODO: 填入你的 X/Twitter 主页，留空则不显示
+        twitter: "https://x.com/KangyuanC97",
+        twitterHandle: "KangyuanC97",
+        jike: "https://web.okjike.com/u/815916E7-5BD5-4EC6-9EB1-14458F0E11CE",
+        jikeHandle: "Kangyuan.C",
+        wechat: "929371009",
     },
 } as const;
