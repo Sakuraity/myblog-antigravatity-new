@@ -180,7 +180,7 @@ const tilts = [-2.4, 1.6, -1.1];
 		const kind = document.querySelector('[data-shelf-kind]');
 		const title = document.querySelector('[data-shelf-title]');
 		const sub = document.querySelector('[data-shelf-sub]');
-		if (!shelf || !kind || !title || !sub || shelf.dataset.ready) return;
+		if (!(shelf instanceof HTMLElement) || !kind || !title || !sub || shelf.dataset.ready) return;
 		shelf.dataset.ready = 'true';
 
 		const apply = (cover: Element | null) => {
