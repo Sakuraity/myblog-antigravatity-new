@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import JikeOriginalLink from '../components/JikeOriginalLink.astro';
 import { getCollection } from 'astro:content';
-import { notePlainText, resolveJikeOriginalUrl } from '../lib/jike-note.mjs';
+import { clampNotePreview, notePlainText, resolveJikeOriginalUrl } from '../lib/jike-note.mjs';
 
 const posts = (await getCollection('posts')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -19,11 +19,7 @@ const latestNote = latestNoteEntry
 				jikePostId: latestNoteEntry.data.jikePostId,
 				body: latestNoteEntry.body,
 			}),
-			snippet: (() => {
-				const text = notePlainText(latestNoteEntry.body);
-				if (text.length <= 140) return text;
-				return `${text.slice(0, 140).replace(/\s+\S*$/, '')}…`;
-			})(),
+			snippet: clampNotePreview(notePlainText(latestNoteEntry.body)),
 		}
 	: null;
 
@@ -269,7 +265,7 @@ const typeStamp = {
 		font-size: clamp(0.98rem, 1.35vw, 1.12rem);
 		line-height: 1.75;
 		color: color-mix(in srgb, var(--ink) 82%, transparent);
-		text-wrap: pretty;
+		white-space: pre-line;
 	}
 
 	.note-more {

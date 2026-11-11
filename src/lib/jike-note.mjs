@@ -21,20 +21,37 @@ export function resolveJikeOriginalUrl({ jikePostId, body } = {}) {
 }
 
 export function stripJikeOriginalAnchor(body = '') {
-  return String(body).replace(originalAnchorRe(), ' ');
+  return String(body).replace(originalAnchorRe(), '');
 }
 
-/** Plain-text preview. Drops the synced "查看原文" anchor so it never reads as body copy. */
+/**
+ * Plain-text preview. Drops the synced "查看原文" anchor, and keeps Jike's
+ * newlines: one newline is a line break, a blank line is a paragraph gap.
+ */
 export function notePlainText(body = '') {
   return stripJikeOriginalAnchor(body)
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, ' ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/https?:\/\/\S+/g, ' ')
-    .replace(/^[#>*\-\d.\s]+/gm, '')
-    .replace(/查看原文/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/查看原文/g, '')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
+}
+
+/** Keep a length clamp without gluing lines back together. */
+export function clampNotePreview(text = '', limit = 140) {
+  const value = String(text);
+  if (value.length <= limit) return value;
+  let cut = value.slice(0, limit);
+  const lastBreak = cut.lastIndexOf('\n');
+  if (lastBreak >= Math.floor(limit * 0.6)) {
+    cut = cut.slice(0, lastBreak);
+  } else {
+    cut = cut.replace(/[ \t]+\S*$/, '');
+  }
+  return `${cut.replace(/[ \t]+$/g, '').replace(/\n+$/g, '')}…`;
 }
 
 function isBlankHtml(value) {
@@ -50,6 +67,36 @@ export function remarkStripJikeOriginal() {
   return (tree) => {
     stripHtmlNodes(tree);
   };
+}
+
+/**
+ * Jike treats every newline as a line break. Only notes get this; blog posts
+ * keep CommonMark soft wrapping. Blank lines stay separate paragraphs.
+ */
+export function remarkPreserveNoteBreaks() {
+  return (tree, file) => {
+    const filePath = decodeURIComponent(String(file?.path || file?.history?.[0] || ''));
+    if (!filePath.includes('/content/notes/')) return;
+    splitNewlines(tree);
+  };
+}
+
+function splitNewlines(node) {
+  if (!node || !Array.isArray(node.children)) return;
+  if (node.type === 'code' || node.type === 'inlineCode') return;
+  node.children = node.children.flatMap((child) => {
+    if (child.type === 'text' && typeof child.value === 'string' && child.value.includes('\n')) {
+      const parts = child.value.split('\n');
+      const out = [];
+      parts.forEach((part, index) => {
+        if (index > 0) out.push({ type: 'break' });
+        if (part.length > 0) out.push({ type: 'text', value: part });
+      });
+      return out;
+    }
+    splitNewlines(child);
+    return [child];
+  });
 }
 
 function stripHtmlNodes(node) {

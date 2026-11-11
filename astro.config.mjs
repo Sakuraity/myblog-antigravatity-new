@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import cloudflare from '@astrojs/cloudflare';
-import { remarkStripJikeOriginal } from './src/lib/jike-note.mjs';
+import { remarkPreserveNoteBreaks, remarkStripJikeOriginal } from './src/lib/jike-note.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,6 +12,6 @@ export default defineConfig({
   adapter: cloudflare(),
   integrations: [tailwind(), sitemap()],
   markdown: {
-    remarkPlugins: [remarkStripJikeOriginal],
+    remarkPlugins: [remarkStripJikeOriginal, remarkPreserveNoteBreaks],
   },
 });

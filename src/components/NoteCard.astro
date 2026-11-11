@@ -253,6 +253,16 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
         min-width: 0;
     }
 
+    /* Blank lines stay separate paragraphs; single newlines are <br>. */
+    .note-card .prose :where(p) {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .note-card .prose :where(p + p) {
+        margin-top: 1.7em;
+    }
+
     /* Belt: the remark plugin already drops this anchor from the body. */
     .note-card .prose a[href*="okjike.com/u/"][href*="/post/"] {
         display: none !important;
