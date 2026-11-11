@@ -55,7 +55,7 @@ const { title, description } = Astro.props;
 			document.addEventListener('astro:after-swap', applyTheme);
 		</script>
 	</head>
-	<body class="bg-bg-light dark:bg-bg-dark text-text-light dark:text-text-dark font-sans antialiased min-h-screen flex flex-col transition-colors duration-300">
+	<body class="site-body bg-bg-light dark:bg-bg-dark text-text-light dark:text-text-dark font-sans antialiased min-h-screen flex flex-col transition-colors duration-300">
 		<header class="sticky top-0 z-50 w-full border-b border-black/5 dark:border-white/10 bg-bg-light/80 dark:bg-bg-dark/80 backdrop-blur-md">
 			<div class="max-w-6xl mx-auto px-6 h-16 grid grid-cols-12 items-center">
 				<!-- Left: Logo -->
@@ -291,6 +291,37 @@ const { title, description } = Astro.props;
 		// Initialize on load and after swap
 		document.addEventListener('astro:page-load', initLightbox);
 	</script>
+
+	<style is:global>
+		/* 浅色模式：草纸纤维屑 / 小墨点（稍强）。暗色模式关闭，避免脏感。 */
+		.site-body::before {
+			content: "";
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			z-index: 0;
+			opacity: 0.78;
+			background-image: url("/images/paper-flecks.png");
+			background-size: 420px 420px;
+			background-repeat: repeat;
+			mix-blend-mode: multiply;
+		}
+
+		html.dark .site-body::before {
+			opacity: 0;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.site-body::before {
+				opacity: 0.45;
+			}
+		}
+
+		.site-body > * {
+			position: relative;
+			z-index: 1;
+		}
+	</style>
 
 	</body>
 </html>
