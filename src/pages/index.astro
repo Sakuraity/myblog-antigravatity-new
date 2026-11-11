@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import JikeOriginalLink from '../components/JikeOriginalLink.astro';
 import { getCollection } from 'astro:content';
-import { clampNotePreview, notePlainText, resolveJikeOriginalUrl } from '../lib/jike-note.mjs';
+import { clampNotePreview, formatNoteDate, notePlainText, resolveJikeOriginalUrl } from '../lib/jike-note.mjs';
 
 const posts = (await getCollection('posts')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -93,11 +93,7 @@ const typeStamp = {
 			<section class="note-mag mt-24 md:mt-32" aria-label="Latest note">
 				<article class="note-spread">
 					<time class="note-date" datetime={latestNote.date.toISOString()}>
-						{latestNote.date.toLocaleDateString('zh-CN', {
-							year: 'numeric',
-							month: 'long',
-							day: 'numeric',
-						})}
+						{formatNoteDate(latestNote.date, 'long')}
 					</time>
 
 					<div class="note-quote-row">

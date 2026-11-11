@@ -1,4 +1,24 @@
 const JIKE_USER_ID = '815916E7-5BD5-4EC6-9EB1-14458F0E11CE';
+const NOTE_TIME_ZONE = 'Asia/Shanghai';
+
+/** Calendar day in China, so 00:00–07:59 Shanghai does not fall on the previous UTC day. */
+export function formatNoteDate(date, month = 'short') {
+  return new Date(date).toLocaleDateString('zh-CN', {
+    timeZone: NOTE_TIME_ZONE,
+    year: 'numeric',
+    month,
+    day: 'numeric',
+  });
+}
+
+export function formatNoteTime(date) {
+  return new Date(date).toLocaleTimeString('zh-CN', {
+    timeZone: NOTE_TIME_ZONE,
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  });
+}
 const POST_ID_RE = /okjike\.com\/u\/[^/"'\s]+\/post\/([a-f0-9]+)/i;
 
 function originalAnchorRe() {
