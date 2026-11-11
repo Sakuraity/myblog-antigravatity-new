@@ -10,7 +10,11 @@
         "preview": "astro preview",
         "astro": "astro",
         "import:content": "node scripts/import_youmind.mjs",
-        "import:paste": "node scripts/import_youmind.mjs --paste"
+        "import:paste": "node scripts/import_youmind.mjs --paste",
+        "jike:list": "node scripts/jike/list-synced.mjs",
+        "jike:fetch": "node scripts/jike/fetch-public-posts.mjs",
+        "jike:apply": "node scripts/jike/apply-sync.mjs",
+        "jike:selftest": "node scripts/jike/selftest.mjs"
     },
     "dependencies": {
         "@astrojs/check": "^0.9.6",
@@ -26,5 +30,8 @@
         "pagefind": "^1.4.0",
         "tailwindcss": "^3.4.19",
         "typescript": "^5.9.3"
+    },
+    "devDependencies": {
+        "playwright": "^1.49.1"
     }
 }

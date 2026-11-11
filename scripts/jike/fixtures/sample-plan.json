@@ -1,0 +1,14 @@
+{
+  "removals": [],
+  "upserts": [
+    {
+      "postId": "fixture000000000000000001",
+      "createdAt": "2026-03-11T12:00:00+08:00",
+      "text": "这是一条用于同步脚本自测的即刻原文，请勿改写含义。\n\n第二段保留换行。",
+      "images": [
+        "https://cdnv2.ruguoapp.com/FgHThdrOFidIy3GHLAQKBsGRO2Hyv3.jpg?imageMogr2/auto-orient/thumbnail/400x2000%3E/quality/70/interlace/1"
+      ],
+      "slugHint": "sync-script-selftest"
+    }
+  ]
+}
