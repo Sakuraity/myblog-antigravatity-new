@@ -1,14 +1,17 @@
 ---
 // NoteCard.astro - 闪念笔记卡片组件
+import JikeOriginalLink from './JikeOriginalLink.astro';
+
 interface Props {
     content?: string;
     date: Date;
     tags?: string[];
     truncate?: boolean;
     slug?: string;
+    originalUrl?: string | null;
 }
 
-const { content, date, tags, truncate = false } = Astro.props;
+const { content, date, tags, truncate = false, originalUrl } = Astro.props;
 
 // Generate a truly unique ID using crypto
 const safeId = `note-${crypto.randomUUID()}`;
@@ -51,11 +54,10 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
             )}
         </div>
         
-        <!-- Content -->
-        <!-- Content -->
+        <div class="note-body">
         <div 
             id={safeId}
-            class={`prose prose-sm dark:prose-invert max-w-none text-text-light dark:text-text-dark transition-all duration-500 ease-in-out ${truncate ? 'max-h-32 overflow-hidden relative' : ''}`}
+            class={`note-copy prose prose-sm dark:prose-invert max-w-none text-text-light dark:text-text-dark transition-all duration-500 ease-in-out ${truncate ? 'max-h-32 overflow-hidden relative' : ''}`}
         >
             {content ? <Fragment set:html={content} /> : <slot />}
             
@@ -69,6 +71,8 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
                     </button>
                 </div>
             )}
+        </div>
+        {originalUrl && <JikeOriginalLink href={originalUrl} />}
         </div>
     </div>
 </article>
@@ -235,6 +239,23 @@ const formattedTime = date.toLocaleTimeString('zh-CN', {
     .note-card {
         scroll-margin-top: 5rem;
         transition: opacity 0.4s ease; /* Ensure opacity transition is smooth */
+    }
+
+    .note-body {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 0.75rem 1.35rem;
+    }
+
+    .note-copy {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    /* Belt: the remark plugin already drops this anchor from the body. */
+    .note-card .prose a[href*="okjike.com/u/"][href*="/post/"] {
+        display: none !important;
     }
 
     /* Focus Mode: Dim other cards when one is expanded */

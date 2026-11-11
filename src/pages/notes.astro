@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import NoteCard from '../components/NoteCard.astro';
 import { getCollection } from 'astro:content';
+import { resolveJikeOriginalUrl } from '../lib/jike-note.mjs';
 
 const notes = (await getCollection('notes')).sort(
     (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -31,6 +32,10 @@ const notesWithContent = await Promise.all(
                 <NoteCard 
                     date={note.data.date}
                     tags={note.data.tags}
+                    originalUrl={resolveJikeOriginalUrl({
+                        jikePostId: note.data.jikePostId,
+                        body: note.body,
+                    })}
                 >
                     <Content />
                 </NoteCard>

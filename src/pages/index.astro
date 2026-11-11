@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import JikeOriginalLink from '../components/JikeOriginalLink.astro';
 import { getCollection } from 'astro:content';
+import { notePlainText, resolveJikeOriginalUrl } from '../lib/jike-note.mjs';
 
 const posts = (await getCollection('posts')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -13,14 +15,12 @@ const latestNoteEntry = (await getCollection('notes'))
 const latestNote = latestNoteEntry
 	? {
 			date: latestNoteEntry.data.date,
+			originalUrl: resolveJikeOriginalUrl({
+				jikePostId: latestNoteEntry.data.jikePostId,
+				body: latestNoteEntry.body,
+			}),
 			snippet: (() => {
-				const text = latestNoteEntry.body
-					.replace(/<[^>]+>/g, ' ')
-					.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-					.replace(/https?:\/\/\S+/g, ' ')
-					.replace(/^[#>*\-\d.\s]+/gm, '')
-					.replace(/\s+/g, ' ')
-					.trim();
+				const text = notePlainText(latestNoteEntry.body);
 				if (text.length <= 140) return text;
 				return `${text.slice(0, 140).replace(/\s+\S*$/, '')}…`;
 			})(),
@@ -104,11 +104,13 @@ const typeStamp = {
 						})}
 					</time>
 
-					<p class="note-quote">{latestNote.snippet || '一条新闪念'}</p>
+					<div class="note-quote-row">
+						<p class="note-quote">{latestNote.snippet || '一条新闪念'}</p>
+						{latestNote.originalUrl && <JikeOriginalLink href={latestNote.originalUrl} />}
+					</div>
 
 					<a href="/notes" class="note-more">
 						<span class="note-more-zh">看看我在想些什么</span>
-						<span class="note-more-en">What's rattling up here →</span>
 					</a>
 				</article>
 			</section>
@@ -252,9 +254,17 @@ const typeStamp = {
 		color: color-mix(in srgb, var(--ink) 48%, transparent);
 	}
 
+	.note-quote-row {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1rem 1.5rem;
+	}
+
 	.note-quote {
 		margin: 0;
-		width: 100%;
+		flex: 1 1 auto;
+		min-width: 0;
 		font-family: "EB Garamond", "Noto Serif SC", serif;
 		font-size: clamp(0.98rem, 1.35vw, 1.12rem);
 		line-height: 1.75;
@@ -278,15 +288,6 @@ const typeStamp = {
 		font-size: 0.68rem;
 		font-weight: 600;
 		letter-spacing: 0.18em;
-		transition: color 0.2s ease;
-	}
-
-	.note-more-en {
-		font-size: 0.68rem;
-		font-weight: 600;
-		font-style: normal;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
 		transition: color 0.2s ease;
 	}
 
