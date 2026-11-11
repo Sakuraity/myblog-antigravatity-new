@@ -6,10 +6,45 @@ const posts = (await getCollection('posts')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 const latest = posts[0];
+
+const noteSnippets = (await getCollection('notes'))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.slice(0, 3)
+	.map((note) => {
+		const snippet = note.body
+			.replace(/<[^>]+>/g, ' ')
+			.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+			.replace(/https?:\/\/\S+/g, ' ')
+			.replace(/^[#>*\-\d.\s]+/gm, '')
+			.replace(/\s+/g, ' ')
+			.trim()
+			.slice(0, 78);
+
+		return {
+			date: note.data.date,
+			snippet: snippet.endsWith('…') || snippet.length < 78 ? snippet : `${snippet}…`,
+			tag: note.data.tags?.[0],
+		};
+	});
+
+const libraryItems = (await getCollection('library'))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.slice(0, 4);
+
+const coverSrc = (cover?: { src: string } | string) =>
+	typeof cover === 'string' ? cover : cover?.src;
+
+const typeStamp = {
+	music: 'Music',
+	video: 'Video',
+	book: 'Book',
+} as const;
+
+const tilts = [-2.4, 1.6, -1.1];
 ---
 
 <Layout title="Kangyuan's Blog">
-	<div class="max-w-3xl pt-4 md:pt-20 pb-16">
+	<div class="home max-w-3xl pt-4 md:pt-20 pb-24">
 		<header class="masthead">
 			<h1 class="font-serif font-normal tracking-tight text-text-light dark:text-text-dark leading-[1.02] text-[2.75rem] sm:text-6xl md:text-7xl">
 				Hammer Seeking Nail
@@ -59,10 +94,125 @@ const latest = posts[0];
 				</div>
 			</article>
 		)}
+
+		<section class="studio mt-28 md:mt-36" aria-label="Notes and Library">
+			<div class="studio-head">
+				<p class="stamp">Notes</p>
+				<a href="/notes" class="studio-more">全部笔记</a>
+			</div>
+
+			<div class="scrap-row">
+				{noteSnippets.map((note, index) => (
+					<a
+						href="/notes"
+						class="scrap"
+						style={`--tilt: ${tilts[index]}deg; --delay: ${0.08 + index * 0.12}s; --bob-delay: ${index * 0.45}s`}
+					>
+						<span class="scrap-pin" aria-hidden="true"></span>
+						<div class="scrap-meta">
+							<span>Note</span>
+							{note.tag && <span>#{note.tag}</span>}
+						</div>
+						<p class="scrap-text">{note.snippet || '一条新闪念'}</p>
+						<time datetime={note.date.toISOString()}>
+							{note.date.toLocaleDateString('zh-CN', {
+								month: 'short',
+								day: 'numeric',
+							})}
+						</time>
+					</a>
+				))}
+			</div>
+		</section>
+
+		<section class="studio mt-24 md:mt-28" aria-label="Library">
+			<div class="studio-head">
+				<p class="stamp">Library</p>
+				<a href="/library" class="studio-more">完整收藏</a>
+			</div>
+
+			<div class="shelf" data-shelf>
+				{libraryItems.map((item, index) => {
+					const src = coverSrc(item.data.coverImage);
+					const subtitle = item.data.type === 'music'
+						? item.data.artist
+						: item.data.type === 'book'
+							? item.data.author
+							: item.data.source;
+					return (
+						<a
+							href="/library"
+							class="cover"
+							style={`--i: ${index}; --bob-delay: ${index * 0.4}s`}
+							data-title={item.data.title}
+							data-sub={subtitle || typeStamp[item.data.type]}
+							data-kind={typeStamp[item.data.type]}
+						>
+							<span class="cover-stamp">{typeStamp[item.data.type]}</span>
+							{src ? (
+								<img src={src} alt={item.data.title} loading="lazy" />
+							) : (
+								<span class="cover-fallback">{item.data.title.slice(0, 1)}</span>
+							)}
+						</a>
+					);
+				})}
+			</div>
+
+			<div class="shelf-caption" data-shelf-caption>
+				<p class="shelf-kind" data-shelf-kind>{typeStamp[libraryItems[0]?.data.type ?? 'book']}</p>
+				<p class="shelf-title" data-shelf-title>{libraryItems[0]?.data.title}</p>
+				<p class="shelf-sub" data-shelf-sub>
+					{libraryItems[0]?.data.type === 'music'
+						? libraryItems[0]?.data.artist
+						: libraryItems[0]?.data.type === 'book'
+							? libraryItems[0]?.data.author
+							: libraryItems[0]?.data.source}
+				</p>
+			</div>
+		</section>
 	</div>
 </Layout>
 
+<script>
+	function initShelfCaption() {
+		const shelf = document.querySelector('[data-shelf]');
+		const kind = document.querySelector('[data-shelf-kind]');
+		const title = document.querySelector('[data-shelf-title]');
+		const sub = document.querySelector('[data-shelf-sub]');
+		if (!shelf || !kind || !title || !sub || shelf.dataset.ready) return;
+		shelf.dataset.ready = 'true';
+
+		const apply = (cover: Element | null) => {
+			if (!(cover instanceof HTMLElement)) return;
+			kind.textContent = cover.dataset.kind || '';
+			title.textContent = cover.dataset.title || '';
+			sub.textContent = cover.dataset.sub || '';
+		};
+
+		shelf.querySelectorAll('.cover').forEach((cover) => {
+			cover.addEventListener('mouseenter', () => apply(cover));
+			cover.addEventListener('focus', () => apply(cover));
+		});
+	}
+
+	document.addEventListener('astro:page-load', initShelfCaption);
+</script>
+
 <style>
+	.home {
+		--ink: #1a1a1a;
+		--paper: #fffdf8;
+		--scrap: #fff7e8;
+		--hot: #d00000;
+	}
+
+	:global(.dark) .home {
+		--ink: #f3f0e7;
+		--paper: #1c1c21;
+		--scrap: #26232b;
+	}
+
 	.masthead {
 		animation: mast-in 1s ease both;
 	}
@@ -94,6 +244,240 @@ const latest = posts[0];
 		opacity: 0.4;
 	}
 
+	.studio {
+		animation: mast-in 1s ease 0.28s both;
+	}
+
+	.studio-head {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.stamp {
+		display: inline-block;
+		margin: 0;
+		padding: 0.2rem 0.55rem;
+		border: 2px solid var(--hot);
+		border-radius: 999px;
+		color: var(--hot);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		transform: rotate(-3deg);
+	}
+
+	.studio-more {
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: #777;
+		transition: color 0.2s ease, transform 0.2s ease;
+	}
+
+	.studio-more:hover {
+		color: var(--hot);
+		transform: translateX(2px);
+	}
+
+	.scrap-row {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.1rem;
+	}
+
+	.scrap {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		min-height: 11.5rem;
+		padding: 1.15rem 1rem 1rem;
+		background: var(--scrap);
+		border: 2.5px solid var(--ink);
+		border-radius: 1.1rem;
+		box-shadow: 4px 4px 0 var(--ink);
+		color: inherit;
+		text-decoration: none;
+		transform: rotate(var(--tilt)) translateY(0);
+		animation:
+			scrap-in 0.7s cubic-bezier(0.2, 1.4, 0.3, 1) var(--delay) both,
+			scrap-bob 3.8s ease-in-out var(--bob-delay) infinite;
+		transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+	}
+
+	.scrap:hover,
+	.scrap:focus-visible {
+		background: var(--paper);
+		box-shadow: 6px 6px 0 var(--ink);
+		transform: rotate(0deg) translateY(-6px) scale(1.02);
+		animation-play-state: paused;
+		outline: none;
+	}
+
+	.scrap-pin {
+		position: absolute;
+		top: -0.45rem;
+		left: 50%;
+		width: 0.85rem;
+		height: 0.85rem;
+		border: 2px solid var(--ink);
+		border-radius: 999px;
+		background: var(--hot);
+		box-shadow: 2px 2px 0 var(--ink);
+		transform: translateX(-50%);
+	}
+
+	.scrap-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+		margin-bottom: 0.7rem;
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--hot);
+	}
+
+	.scrap-text {
+		margin: 0;
+		flex: 1;
+		font-family: "EB Garamond", "Noto Serif SC", serif;
+		font-size: 1.05rem;
+		line-height: 1.45;
+		color: var(--ink);
+	}
+
+	.scrap time {
+		margin-top: 0.9rem;
+		font-size: 0.72rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		opacity: 0.55;
+	}
+
+	.shelf {
+		position: relative;
+		height: 15rem;
+		margin-top: 0.5rem;
+	}
+
+	.cover {
+		position: absolute;
+		top: 1.2rem;
+		left: 50%;
+		width: clamp(7.5rem, 22vw, 9.5rem);
+		aspect-ratio: 1;
+		overflow: hidden;
+		border: 2.5px solid var(--ink);
+		border-radius: 1.15rem;
+		background: var(--paper);
+		box-shadow: 4px 4px 0 var(--ink);
+		transform:
+			translateX(calc(-50% + (var(--i) - 1.5) * 4.6rem))
+			rotate(calc((var(--i) - 1.5) * 7deg))
+			translateY(0);
+		animation: cover-bob 3.4s ease-in-out var(--bob-delay) infinite;
+		transition: transform 0.35s cubic-bezier(0.2, 1.2, 0.3, 1), box-shadow 0.35s ease, z-index 0s;
+		z-index: calc(10 + var(--i));
+	}
+
+	.cover img,
+	.cover-fallback {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.cover-fallback {
+		display: grid;
+		place-items: center;
+		font-family: "EB Garamond", "Noto Serif SC", serif;
+		font-size: 2.5rem;
+		background: #f3e7d4;
+		color: var(--hot);
+	}
+
+	.cover-stamp {
+		position: absolute;
+		top: 0.55rem;
+		left: 0.55rem;
+		z-index: 2;
+		padding: 0.15rem 0.45rem;
+		border: 2px solid var(--ink);
+		border-radius: 999px;
+		background: #fff7e8;
+		color: var(--ink);
+		font-size: 0.58rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		box-shadow: 2px 2px 0 var(--ink);
+	}
+
+	:global(.dark) .cover-stamp {
+		background: #2b2730;
+		color: var(--ink);
+	}
+
+	.shelf:hover .cover,
+	.shelf:focus-within .cover {
+		animation-play-state: paused;
+		transform:
+			translateX(calc(-50% + (var(--i) - 1.5) * 6.4rem))
+			rotate(calc((var(--i) - 1.5) * 2deg))
+			translateY(-0.55rem);
+	}
+
+	.cover:hover,
+	.cover:focus-visible {
+		z-index: 30;
+		box-shadow: 7px 7px 0 var(--ink);
+		transform:
+			translateX(calc(-50% + (var(--i) - 1.5) * 6.4rem))
+			rotate(0deg)
+			translateY(-1.1rem)
+			scale(1.06);
+		outline: none;
+	}
+
+	.shelf-caption {
+		margin-top: 1.35rem;
+		text-align: center;
+		min-height: 4.5rem;
+	}
+
+	.shelf-kind {
+		margin: 0;
+		color: var(--hot);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	.shelf-title {
+		margin: 0.45rem 0 0;
+		font-family: "EB Garamond", "Noto Serif SC", serif;
+		font-size: 1.35rem;
+		line-height: 1.3;
+	}
+
+	.shelf-sub {
+		margin: 0.25rem 0 0;
+		color: #777;
+		font-size: 0.92rem;
+	}
+
+	:global(.dark) .shelf-sub {
+		color: #a1a1aa;
+	}
+
 	@keyframes mast-in {
 		from {
 			opacity: 0;
@@ -121,16 +505,111 @@ const latest = posts[0];
 		}
 	}
 
+	@keyframes scrap-in {
+		from {
+			opacity: 0;
+			transform: rotate(calc(var(--tilt) - 8deg)) translateY(1.4rem) scale(0.92);
+		}
+		to {
+			opacity: 1;
+			transform: rotate(var(--tilt)) translateY(0) scale(1);
+		}
+	}
+
+	@keyframes scrap-bob {
+		0%,
+		100% {
+			transform: rotate(var(--tilt)) translateY(0);
+		}
+		50% {
+			transform: rotate(calc(var(--tilt) + 0.6deg)) translateY(-0.35rem);
+		}
+	}
+
+	@keyframes cover-bob {
+		0%,
+		100% {
+			transform:
+				translateX(calc(-50% + (var(--i) - 1.5) * 4.6rem))
+				rotate(calc((var(--i) - 1.5) * 7deg))
+				translateY(0);
+		}
+		50% {
+			transform:
+				translateX(calc(-50% + (var(--i) - 1.5) * 4.6rem))
+				rotate(calc((var(--i) - 1.5) * 7deg + 1.2deg))
+				translateY(-0.45rem);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.scrap-row {
+			grid-template-columns: 1fr;
+		}
+
+		.scrap {
+			min-height: 0;
+			transform: none;
+			animation:
+				scrap-in 0.7s cubic-bezier(0.2, 1.4, 0.3, 1) var(--delay) both,
+				scrap-bob-flat 3.8s ease-in-out var(--bob-delay) infinite;
+		}
+
+		.scrap:hover,
+		.scrap:focus-visible {
+			transform: translateY(-4px);
+		}
+
+		.shelf {
+			height: 12.5rem;
+		}
+
+		.cover {
+			width: 6.4rem;
+			transform:
+				translateX(calc(-50% + (var(--i) - 1.5) * 2.8rem))
+				rotate(calc((var(--i) - 1.5) * 6deg));
+		}
+
+		.shelf:hover .cover,
+		.shelf:focus-within .cover,
+		.cover:hover,
+		.cover:focus-visible {
+			transform:
+				translateX(calc(-50% + (var(--i) - 1.5) * 3.5rem))
+				rotate(calc((var(--i) - 1.5) * 2deg))
+				translateY(-0.4rem);
+		}
+	}
+
+	@keyframes scrap-bob-flat {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-0.28rem);
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.masthead,
 		.feature,
-		.slogan-word {
+		.studio,
+		.slogan-word,
+		.scrap,
+		.cover {
 			animation: none;
 		}
 
 		.slogan-word {
 			color: var(--hot);
 			opacity: 1;
+		}
+
+		.scrap,
+		.cover {
+			transform: none;
 		}
 	}
 </style>
