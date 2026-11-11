@@ -5,14 +5,14 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				// Rational Elegance Palette
-				primary: '#D00000', // New Yorker Red
+				// Sage moss + flecked paper (light); dark keeps graphite surfaces
+				primary: '#3E6B48', // 苔绿
 
-				// Light Mode (Warm/Creamy)
-				'bg-light': '#FDFBF9',
-				'surface-light': '#FFFFFF', // 卡片/浮层背景
-				'text-light': '#1A1A1A',
-				'text-muted-light': '#555555',
+				// Light Mode (草纸冷灰绿 + 墨点纹理)
+				'bg-light': '#EEEEE6',
+				'surface-light': '#F7F7F1', // 卡片/浮层背景
+				'text-light': '#1C1E1A',
+				'text-muted-light': '#5B6158',
 
 				// Dark Mode (OpenAI/Modern Dark)
 				'bg-dark': '#131316',
