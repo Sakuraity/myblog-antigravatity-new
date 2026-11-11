@@ -50,6 +50,37 @@ async function cleanupFixture() {
 
 await cleanupFixture();
 
+const missingDatePlanPath = path.join(REPO_ROOT, 'scripts/jike/fixtures/missing-date-plan.json');
+await fs.writeFile(
+  missingDatePlanPath,
+  JSON.stringify(
+    {
+      removals: [],
+      upserts: [
+        {
+          postId: 'fixture-missing-date-should-fail',
+          text: 'should fail without createdAt',
+          images: [],
+        },
+      ],
+    },
+    null,
+    2
+  )
+);
+const missingDateResult = await runNode([
+  'scripts/jike/apply-sync.mjs',
+  '--plan',
+  missingDatePlanPath,
+]).then(
+  () => ({ ok: true }),
+  (error) => ({ ok: false, error })
+);
+await fs.unlink(missingDatePlanPath).catch(() => {});
+if (missingDateResult.ok) {
+  throw new Error('Expected apply-sync to reject upserts without createdAt');
+}
+
 const createResult = await runNode([
   'scripts/jike/apply-sync.mjs',
   '--plan',
@@ -64,6 +95,12 @@ const notePath = path.join(NOTES_DIR, created.created[0].fileName);
 const noteRaw = await fs.readFile(notePath, 'utf8');
 if (!noteRaw.includes(`jikePostId: ${FIXTURE_ID}`)) {
   throw new Error('Created note missing jikePostId');
+}
+if (!noteRaw.includes('date: 2026-03-11T12:00:00+08:00')) {
+  throw new Error('Created note date must equal Jike publish time from plan, not sync time');
+}
+if (!created.created[0].fileName.startsWith('2026-03-11-')) {
+  throw new Error(`Filename date must follow publish day, got ${created.created[0].fileName}`);
 }
 if (!noteRaw.includes('这是一条用于同步脚本自测的即刻原文')) {
   throw new Error('Created note missing original text');
@@ -130,7 +167,15 @@ console.log(
   JSON.stringify(
     {
       ok: true,
-      checks: ['create', 'download-image', 'idempotent-skip', 'remove', 'list-synced'],
+      checks: [
+        'reject-missing-createdAt',
+        'create',
+        'publish-date-not-sync-date',
+        'download-image',
+        'idempotent-skip',
+        'remove',
+        'list-synced',
+      ],
       existingJikeNotes: listed.count,
     },
     null,

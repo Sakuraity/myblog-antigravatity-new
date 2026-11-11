@@ -119,7 +119,15 @@ export function slugify(input, fallback = 'note') {
   return ascii || fallback;
 }
 
+/**
+ * Parse a Jike publish timestamp into Asia/Shanghai calendar parts.
+ * Accepts ISO strings. Rejects empty values so callers cannot silently
+ * substitute the sync clock.
+ */
 export function dateParts(isoLike) {
+  if (isoLike == null || String(isoLike).trim() === '') {
+    throw new Error('createdAt is required (use Jike publish time, not sync time)');
+  }
   const date = new Date(isoLike);
   if (Number.isNaN(date.getTime())) {
     throw new Error(`Invalid date: ${isoLike}`);

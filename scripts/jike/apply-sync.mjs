@@ -108,8 +108,11 @@ async function createNote(post, existingById) {
     };
   }
 
-  const createdAt = post.createdAt || new Date().toISOString();
-  const { ymd, isoWithOffset } = dateParts(createdAt);
+  // Date must be the Jike publish time — never fall back to "now"/sync time.
+  if (!post.createdAt) {
+    throw new Error(`upsert ${postId} missing createdAt (must be Jike publish time)`);
+  }
+  const { ymd, isoWithOffset } = dateParts(post.createdAt);
   const slugHint = slugify(post.slugHint || '', postId.slice(0, 8));
   const fileName = await ensureUniqueFileName(`${ymd}-${slugHint}.md`);
 

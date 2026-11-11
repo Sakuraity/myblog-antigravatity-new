@@ -60,10 +60,18 @@ Collect removals:
 
 Open the **mobile** profile page and collect recent public posts (enough to cover since the previous run; typically last 1–3 days / first few screens).
 
-For each public post not already in `list-synced` output, extract:
+For each public post not already in `list-synced` output, open the mobile detail page and extract:
 
 - `postId`
-- `createdAt` (prefer real post time; timezone `+08:00`)
+- `createdAt` — **required: the original Jike publish time**, timezone `+08:00`  
+  - Do **not** use the sync/run clock  
+  - Filename date (`YYYY-MM-DD-...`) and frontmatter `date` both come from this publish time  
+  - UI often shows only `HH:mm` / `N天前`. Resolve absolute time from page data, not the visible label:
+    1. Prefer Network / embedded JSON (`createdAt` or `actionTime`)
+    2. On mobile detail/profile pages, inspect `__NEXT_DATA__` carefully — shape may be `pageProps.posts[]`, not `pageProps.post`
+    3. Convert UTC `Z` timestamps to `+08:00`
+    4. Double-check `postId` against the address bar (easy to mistype)
+    5. If still impossible, skip that post and report it (do **not** use sync/run time)
 - `text` (original wording)
 - `images` (all image URLs)
 - `slugHint` (short English kebab slug from meaning; optional)

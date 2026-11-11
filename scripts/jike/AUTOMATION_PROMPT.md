@@ -38,6 +38,7 @@ Hard rules:
 8. Prefer the helper scripts:
    - `node scripts/jike/list-synced.mjs`
    - `node scripts/jike/apply-sync.mjs --plan /tmp/jike-sync-plan.json`
+9. **Date rule (critical):** `createdAt` must be the original Jike publish time (`+08:00`). Never use the automation run time. Both the note filename date and frontmatter `date` must follow publish time. Resolve from API/embedded JSON (`createdAt` or `actionTime`); UI labels like `06:53` / `2天前` are not enough. If you cannot resolve an absolute publish time, skip that post.
 
 Visibility checks:
 - For each postId from list-synced, open https://m.okjike.com/originalPosts/<postId>
