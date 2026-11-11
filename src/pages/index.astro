@@ -13,7 +13,6 @@ const latestNoteEntry = (await getCollection('notes'))
 const latestNote = latestNoteEntry
 	? {
 			date: latestNoteEntry.data.date,
-			tag: latestNoteEntry.data.tags?.[0],
 			snippet: (() => {
 				const text = latestNoteEntry.body
 					.replace(/<[^>]+>/g, ' ')
@@ -45,10 +44,10 @@ const typeStamp = {
 <Layout title="Kangyuan's Blog">
 	<div class="home max-w-3xl pt-4 md:pt-20 pb-24">
 		<header class="masthead">
-			<h1 class="font-serif font-normal tracking-tight text-text-light dark:text-text-dark leading-[1.02] text-[2.75rem] sm:text-6xl md:text-7xl">
+			<h1 class="font-serif font-normal tracking-tight text-text-light dark:text-text-dark leading-[1.05] text-[2.4rem] sm:text-5xl md:text-6xl">
 				Hammer Seeking Nail
 			</h1>
-			<p class="slogan-line mt-7 md:mt-9 font-serif italic text-[1.7rem] sm:text-3xl md:text-[2.6rem] leading-snug" aria-label="Logic, Emotion, Elegance">
+			<p class="slogan-line mt-6 md:mt-8 font-serif italic text-[1.35rem] sm:text-2xl md:text-[2.05rem] leading-snug" aria-label="Logic, Emotion, Elegance">
 				<span class="slogan-word" style="animation-delay: 0s">Logic</span>
 				<span class="slogan-dot" aria-hidden="true">·</span>
 				<span class="slogan-word" style="animation-delay: 2.2s">Emotion</span>
@@ -72,13 +71,13 @@ const typeStamp = {
 					</time>
 				</div>
 
-				<h2 class="mt-7 font-serif font-normal text-[2rem] leading-[1.3] sm:text-4xl md:text-[2.75rem] text-text-light dark:text-text-dark text-balance">
+				<h2 class="mt-6 font-serif font-normal text-[1.7rem] leading-[1.35] sm:text-3xl md:text-[2.2rem] text-text-light dark:text-text-dark text-balance">
 					<a href={`/posts/${latest.slug}/`} class="hover:text-primary transition-colors duration-300">
 						{latest.data.title}
 					</a>
 				</h2>
 
-				<p class="mt-6 max-w-lg font-serif text-lg md:text-[1.35rem] leading-[1.7] text-text-light/75 dark:text-text-dark/75">
+				<p class="mt-5 max-w-lg font-serif text-base md:text-lg leading-[1.7] text-text-light/75 dark:text-text-dark/75">
 					{latest.data.description}
 				</p>
 
@@ -95,19 +94,15 @@ const typeStamp = {
 		)}
 
 		{latestNote && (
-			<section class="note-mag mt-28 md:mt-36" aria-label="Latest note">
+			<section class="note-mag mt-24 md:mt-32" aria-label="Latest note">
 				<article class="note-spread">
-					<aside class="note-rail">
-						<p class="note-label">Note</p>
-						{latestNote.tag && <p class="note-tag">#{latestNote.tag}</p>}
-						<time datetime={latestNote.date.toISOString()}>
-							{latestNote.date.toLocaleDateString('zh-CN', {
-								year: 'numeric',
-								month: 'long',
-								day: 'numeric',
-							})}
-						</time>
-					</aside>
+					<time class="note-date" datetime={latestNote.date.toISOString()}>
+						{latestNote.date.toLocaleDateString('zh-CN', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric',
+						})}
+					</time>
 
 					<div class="note-body">
 						<p class="note-quote">{latestNote.snippet || '一条新闪念'}</p>
@@ -244,38 +239,17 @@ const typeStamp = {
 	/* Notes: magazine spread */
 	.note-spread {
 		display: grid;
-		grid-template-columns: 8.5rem minmax(0, 1fr);
-		gap: 1.75rem 2.25rem;
+		grid-template-columns: 7.25rem minmax(0, 1fr);
+		gap: 1.25rem 1.75rem;
 		align-items: start;
 		padding-top: 0.35rem;
 		border-top: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
 	}
 
-	.note-rail {
-		padding-top: 0.15rem;
-	}
-
-	.note-label {
-		margin: 0;
-		color: var(--hot);
-		font-size: 0.68rem;
-		font-weight: 600;
-		letter-spacing: 0.22em;
-		text-transform: uppercase;
-	}
-
-	.note-tag {
-		margin: 0.55rem 0 0;
-		font-family: "EB Garamond", "Noto Serif SC", serif;
-		font-size: 0.95rem;
-		font-style: italic;
-		color: color-mix(in srgb, var(--ink) 62%, transparent);
-	}
-
-	.note-rail time {
+	.note-date {
 		display: block;
-		margin-top: 1.1rem;
-		font-size: 0.72rem;
+		padding-top: 0.2rem;
+		font-size: 0.7rem;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: color-mix(in srgb, var(--ink) 48%, transparent);
@@ -283,11 +257,11 @@ const typeStamp = {
 
 	.note-quote {
 		margin: 0;
-		max-width: 34rem;
+		max-width: 32rem;
 		font-family: "EB Garamond", "Noto Serif SC", serif;
-		font-size: clamp(1.2rem, 2.1vw, 1.55rem);
-		line-height: 1.65;
-		color: color-mix(in srgb, var(--ink) 88%, transparent);
+		font-size: clamp(0.98rem, 1.35vw, 1.12rem);
+		line-height: 1.7;
+		color: color-mix(in srgb, var(--ink) 82%, transparent);
 		text-wrap: pretty;
 	}
 
@@ -295,20 +269,20 @@ const typeStamp = {
 		display: inline-flex;
 		flex-direction: column;
 		align-items: flex-start;
-		gap: 0.2rem;
-		margin-top: 1.6rem;
+		gap: 0.15rem;
+		margin-top: 1.25rem;
 		text-decoration: none;
 		color: inherit;
 	}
 
 	.note-more-zh {
 		font-family: "EB Garamond", "Noto Serif SC", serif;
-		font-size: 1.08rem;
+		font-size: 0.98rem;
 		transition: color 0.2s ease;
 	}
 
 	.note-more-en {
-		font-size: 0.72rem;
+		font-size: 0.68rem;
 		font-style: italic;
 		letter-spacing: 0.04em;
 		color: color-mix(in srgb, var(--ink) 48%, transparent);
@@ -489,9 +463,9 @@ const typeStamp = {
 	}
 
 	.shelf-title {
-		margin: 0.45rem 0 0;
+		margin: 0.4rem 0 0;
 		font-family: "EB Garamond", "Noto Serif SC", serif;
-		font-size: 1.35rem;
+		font-size: 1.15rem;
 		line-height: 1.3;
 	}
 
@@ -553,18 +527,7 @@ const typeStamp = {
 	@media (max-width: 768px) {
 		.note-spread {
 			grid-template-columns: 1fr;
-			gap: 0.85rem;
-		}
-
-		.note-rail {
-			display: flex;
-			flex-wrap: wrap;
-			align-items: baseline;
-			gap: 0.55rem 0.9rem;
-		}
-
-		.note-rail time {
-			margin-top: 0;
+			gap: 0.7rem;
 		}
 
 		.shelf {
