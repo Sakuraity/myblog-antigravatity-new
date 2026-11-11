@@ -10,7 +10,10 @@
         "preview": "astro preview",
         "astro": "astro",
         "import:content": "node scripts/import_youmind.mjs",
-        "import:paste": "node scripts/import_youmind.mjs --paste"
+        "import:paste": "node scripts/import_youmind.mjs --paste",
+        "jike:list": "node scripts/jike/list-synced.mjs",
+        "jike:apply": "node scripts/jike/apply-sync.mjs",
+        "jike:selftest": "node scripts/jike/selftest.mjs"
     },
     "dependencies": {
         "@astrojs/check": "^0.9.6",

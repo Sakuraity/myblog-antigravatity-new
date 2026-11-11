@@ -48,11 +48,13 @@ const library = defineCollection({
     }),
 });
 
-// Notes: 闪念笔记
+// Notes: 闪念笔记（含即刻同步字段）
 const notes = defineCollection({
     schema: z.object({
         date: z.coerce.date(),
         tags: z.array(z.string()).optional(),
+        // 即刻原文 ID；有值时表示该笔记来自即刻同步，可用于去重与下架
+        jikePostId: z.string().optional(),
     }),
 });
 

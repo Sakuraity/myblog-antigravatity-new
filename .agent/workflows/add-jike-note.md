@@ -16,19 +16,38 @@ Trigger this workflow when the user asks to "Add Jike note" or "添加即刻" wi
 3.  **Extract Content**:
     *   Extract the post text.
     *   Extract all image URLs.
-4.  **Create Note File**:
-    *   Create a new file in `/Users/sakuraity/Projects/myblog-antigravatity-main/src/content/notes/`.
+4.  **Prefer the sync helper for a single public post** (downloads images + writes frontmatter):
+    ```bash
+    cat > /tmp/jike-one.json <<'EOF'
+    {
+      "removals": [],
+      "upserts": [{
+        "postId": "[POST_ID]",
+        "createdAt": "[ISO +08:00]",
+        "text": "[ORIGINAL TEXT]",
+        "images": ["[IMAGE_URL]", "..."],
+        "slugHint": "[short-english-slug]"
+      }]
+    }
+    EOF
+    node scripts/jike/apply-sync.mjs --plan /tmp/jike-one.json
+    ```
+    For scheduled full sync (add + unpublish), use `.agent/workflows/sync-jike-notes.md` instead.
+
+5.  **Manual fallback** (only if the helper cannot run):
+    *   Create a new file in `src/content/notes/`.
     *   Filename: `[YYYY-MM-DD-short-slug].md`.
     *   Frontmatter:
         ```yaml
         ---
         date: [Current ISO Time with Timezone e.g., 2025-12-19T14:05:00+08:00]
         tags: ["Jike", "随想"]
+        jikePostId: [POST_ID]
         ---
         ```
     *   Body:
-        *   The extracted text.
-        *   Any extracted images. **Use standard Markdown syntax `![image](url)`**. Do not use HTML `<img>` tags for images.
+        *   The extracted text (do not rewrite meaning).
+        *   Images: prefer downloading via the helper. If linking remotely temporarily, use `![image](url)`.
         *   A link to the original post:
             ```html
             <a href="[URL]" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 mt-1 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-zinc-800 rounded-full hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors no-underline group-hover:bg-gray-200 dark:group-hover:bg-zinc-700">
