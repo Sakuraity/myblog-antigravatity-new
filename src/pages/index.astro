@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import JikeOriginalLink from '../components/JikeOriginalLink.astro';
 import { getCollection } from 'astro:content';
-import { clampNotePreview, formatNoteDate, notePlainText, resolveJikeOriginalUrl } from '../lib/jike-note.mjs';
+import { clampNotePreview, formatNoteDate, noteImageSrcs, notePlainText, resolveJikeOriginalUrl } from '../lib/jike-note.mjs';
 
 const posts = (await getCollection('posts')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -20,6 +20,7 @@ const latestNote = latestNoteEntry
 				body: latestNoteEntry.body,
 			}),
 			snippet: clampNotePreview(notePlainText(latestNoteEntry.body)),
+			images: noteImageSrcs(latestNoteEntry.body),
 		}
 	: null;
 
@@ -97,7 +98,16 @@ const typeStamp = {
 					</time>
 
 					<div class="note-quote-row">
-						<p class="note-quote">{latestNote.snippet || '一条新闪念'}</p>
+						<div class="note-quote-copy">
+							<p class="note-quote">{latestNote.snippet || '一条新闪念'}</p>
+							{latestNote.images.length > 0 && (
+								<div class="note-quote-images">
+									{latestNote.images.map((src) => (
+										<img src={src} alt="" loading="lazy" />
+									))}
+								</div>
+							)}
+						</div>
 						{latestNote.originalUrl && <JikeOriginalLink href={latestNote.originalUrl} />}
 					</div>
 
@@ -254,15 +264,39 @@ const typeStamp = {
 		gap: 1rem 1.5rem;
 	}
 
-	.note-quote {
-		margin: 0;
+	.note-quote-copy {
 		flex: 1 1 auto;
 		min-width: 0;
+	}
+
+	.note-quote {
+		margin: 0;
 		font-family: "EB Garamond", "Noto Serif SC", serif;
 		font-size: clamp(0.98rem, 1.35vw, 1.12rem);
 		line-height: 1.75;
 		color: color-mix(in srgb, var(--ink) 82%, transparent);
 		white-space: pre-line;
+	}
+
+	.note-quote-images {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 0.75rem;
+	}
+
+	.note-quote-images img {
+		display: block;
+		max-height: 200px;
+		max-width: 100%;
+		width: auto;
+		object-fit: contain;
+		border-radius: 0.5rem;
+		background-color: rgb(0 0 0 / 0.05);
+	}
+
+	:global(.dark) .note-quote-images img {
+		background-color: rgb(255 255 255 / 0.05);
 	}
 
 	.note-more {

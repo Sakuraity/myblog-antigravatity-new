@@ -60,6 +60,22 @@ export function notePlainText(body = '') {
     .trim();
 }
 
+/** Local and remote images embedded in a note, in source order. */
+export function noteImageSrcs(body = '') {
+  const cleaned = stripJikeOriginalAnchor(body);
+  const srcs = [];
+  const patterns = [
+    /!\[[^\]]*\]\(\s*<?([^)\s>]+)>?(?:\s+"[^"]*")?\s*\)/g,
+    /<img\b[^>]*\bsrc=["']([^"']+)["']/gi,
+  ];
+  for (const pattern of patterns) {
+    for (const match of cleaned.matchAll(pattern)) {
+      if (match[1]) srcs.push(match[1]);
+    }
+  }
+  return [...new Set(srcs)];
+}
+
 /** Keep a length clamp without gluing lines back together. */
 export function clampNotePreview(text = '', limit = 140) {
   const value = String(text);
